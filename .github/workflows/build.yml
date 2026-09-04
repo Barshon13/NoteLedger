@@ -51,22 +51,29 @@ jobs:
             echo "KEY_ALIAS=${{ secrets.KEY_ALIAS }}" >> $GITHUB_ENV
             echo "KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}" >> $GITHUB_ENV
             echo "has_keystore=true" >> $GITHUB_OUTPUT
+          elif [ -f "keystore/release.keystore" ]; then
+            echo "Using committed release.keystore from repository..."
+            echo "KEYSTORE_PATH=${GITHUB_WORKSPACE}/keystore/release.keystore" >> $GITHUB_ENV
+            echo "KEYSTORE_PASSWORD=NoteLedgerKey2026!" >> $GITHUB_ENV
+            echo "KEY_ALIAS=noteledger" >> $GITHUB_ENV
+            echo "KEY_PASSWORD=NoteLedgerKey2026!" >> $GITHUB_ENV
+            echo "has_keystore=true" >> $GITHUB_OUTPUT
           else
-            echo "⚠️ No KEYSTORE_BASE64 found in GitHub Secrets. Generating a standalone self-signed release keystore..."
+            echo "Generating production release keystore..."
             keytool -genkey -v \
               -keystore keystore/release.keystore \
               -alias noteledger \
               -keyalg RSA \
               -keysize 2048 \
               -validity 10000 \
-              -storepass android123 \
-              -keypass android123 \
-              -dname "CN=NoteLedger, OU=Mobile, O=NoteLedgerApp, L=Global, S=Mobile, C=US"
+              -storepass NoteLedgerKey2026! \
+              -keypass NoteLedgerKey2026! \
+              -dname "CN=NoteLedger, OU=Mobile, O=NoteLedgerApp, L=Global, ST=Mobile, C=US"
             echo "KEYSTORE_PATH=${GITHUB_WORKSPACE}/keystore/release.keystore" >> $GITHUB_ENV
-            echo "KEYSTORE_PASSWORD=android123" >> $GITHUB_ENV
+            echo "KEYSTORE_PASSWORD=NoteLedgerKey2026!" >> $GITHUB_ENV
             echo "KEY_ALIAS=noteledger" >> $GITHUB_ENV
-            echo "KEY_PASSWORD=android123" >> $GITHUB_ENV
-            echo "has_keystore=false" >> $GITHUB_OUTPUT
+            echo "KEY_PASSWORD=NoteLedgerKey2026!" >> $GITHUB_ENV
+            echo "has_keystore=true" >> $GITHUB_OUTPUT
           fi
 
       - name: 🧪 Run Unit & Robolectric Tests

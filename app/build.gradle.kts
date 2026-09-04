@@ -25,25 +25,21 @@ android {
 
   signingConfigs {
     create("release") {
-      val keystorePath = System.getenv("KEYSTORE_PATH")
-        ?: "${rootDir}/release.keystore"
-      val keystoreFile = file(keystorePath)
-
-      if (keystoreFile.exists()) {
-        storeFile = keystoreFile
-        storePassword = System.getenv("KEYSTORE_PASSWORD") ?: System.getenv("STORE_PASSWORD") ?: "android"
-        keyAlias = System.getenv("KEY_ALIAS") ?: "noteledger"
-        keyPassword = System.getenv("KEY_PASSWORD") ?: System.getenv("KEYSTORE_PASSWORD") ?: "android"
+      val envKeystorePath = System.getenv("KEYSTORE_PATH")
+      val keystoreFile = if (envKeystorePath != null && file(envKeystorePath).exists()) {
+        file(envKeystorePath)
+      } else if (file("${rootDir}/keystore/release.keystore").exists()) {
+        file("${rootDir}/keystore/release.keystore")
+      } else if (file("${rootDir}/release.keystore").exists()) {
+        file("${rootDir}/release.keystore")
       } else {
-        // Fallback to debug keystore for development / dry-run compilation
-        val debugKeystore = file("${rootDir}/debug.keystore")
-        if (debugKeystore.exists()) {
-          storeFile = debugKeystore
-          storePassword = "android"
-          keyAlias = "androiddebugkey"
-          keyPassword = "android"
-        }
+        file("${rootDir}/debug.keystore")
       }
+
+      storeFile = keystoreFile
+      storePassword = System.getenv("KEYSTORE_PASSWORD") ?: "NoteLedgerKey2026!"
+      keyAlias = System.getenv("KEY_ALIAS") ?: "noteledger"
+      keyPassword = System.getenv("KEY_PASSWORD") ?: System.getenv("KEYSTORE_PASSWORD") ?: "NoteLedgerKey2026!"
     }
     create("debugConfig") {
       storeFile = file("${rootDir}/debug.keystore")
