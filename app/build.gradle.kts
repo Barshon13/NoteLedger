@@ -26,20 +26,20 @@ android {
   signingConfigs {
     create("release") {
       val envKeystorePath = System.getenv("KEYSTORE_PATH")
-      val keystoreFile = if (envKeystorePath != null && file(envKeystorePath).exists()) {
-        file(envKeystorePath)
-      } else if (file("${rootDir}/keystore/release.keystore").exists()) {
-        file("${rootDir}/keystore/release.keystore")
-      } else if (file("${rootDir}/release.keystore").exists()) {
-        file("${rootDir}/release.keystore")
-      } else {
-        file("${rootDir}/debug.keystore")
+      val keystoreFile = when {
+        envKeystorePath != null && file(envKeystorePath).exists() -> file(envKeystorePath)
+        file("${rootDir}/app/release.keystore").exists() -> file("${rootDir}/app/release.keystore")
+        file("${rootDir}/keystore/release.keystore").exists() -> file("${rootDir}/keystore/release.keystore")
+        file("${rootDir}/release.keystore").exists() -> file("${rootDir}/release.keystore")
+        else -> null
       }
 
-      storeFile = keystoreFile
-      storePassword = System.getenv("KEYSTORE_PASSWORD") ?: "NoteLedgerKey2026!"
-      keyAlias = System.getenv("KEY_ALIAS") ?: "noteledger"
-      keyPassword = System.getenv("KEY_PASSWORD") ?: System.getenv("KEYSTORE_PASSWORD") ?: "NoteLedgerKey2026!"
+      if (keystoreFile != null && keystoreFile.exists()) {
+        storeFile = keystoreFile
+        storePassword = System.getenv("KEYSTORE_PASSWORD") ?: "NoteLedgerKey2026!"
+        keyAlias = System.getenv("KEY_ALIAS") ?: "noteledger"
+        keyPassword = System.getenv("KEY_PASSWORD") ?: System.getenv("KEYSTORE_PASSWORD") ?: "NoteLedgerKey2026!"
+      }
     }
     create("debugConfig") {
       storeFile = file("${rootDir}/debug.keystore")
