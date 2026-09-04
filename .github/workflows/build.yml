@@ -14,22 +14,19 @@ jobs:
     name: Build & Sign Production Release
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    env:
+      ACTIONS_RUNNER_FORCE_NODE24: "true"
 
     steps:
       - name: 🚀 Checkout Repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: ☕ Set up JDK 17
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
           cache: 'gradle'
-
-      - name: 🐘 Set up Gradle
-        uses: gradle/actions/setup-gradle@v6
-        with:
-          gradle-version: '9.3.1'
 
       - name: ⚙️ Ensure Fresh Gradle Wrapper
         run: |
@@ -80,7 +77,7 @@ jobs:
           $APKSIGNER verify --verbose app-final-release.apk
 
       - name: 📤 Upload Signed Release APK
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v4
         with:
           name: Production-Release-APK
           path: app-final-release.apk
@@ -88,7 +85,7 @@ jobs:
           if-no-files-found: error
 
       - name: 📤 Upload Production Release AAB
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v4
         with:
           name: Production-Release-AAB
           path: app/build/outputs/bundle/release/*.aab
