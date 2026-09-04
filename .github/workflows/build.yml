@@ -5,52 +5,92 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
+    name: Build & Sign Production Release
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
-      - uses: actions/checkout@v4
+      - name: 🚀 Checkout Repository
+        uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: ☕ Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          distribution: 'zulu'
+          distribution: 'temurin'
           java-version: '17'
+          cache: 'gradle'
 
-      # Keystore ডিকোড করা
-      - name: Decode Keystore
+      - name: 🐘 Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.3.1'
+
+      - name: ⚙️ Ensure Fresh Gradle Wrapper
         run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > app/release.keystore
+          gradle wrapper --gradle-version 9.3.1
+          chmod +x gradlew
 
-      # পারমিশন দিয়ে শুধু রিলিজ বিল্ড চালানো
-      - name: Build Release APK and Bundle
+      - name: 🔐 Decode Keystore
+        run: |
+          mkdir -p app
+          if [ -n "${{ secrets.KEYSTORE_BASE64 }}" ]; then
+            echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > app/release.keystore
+          elif [ -f "keystore/release.keystore" ]; then
+            cp keystore/release.keystore app/release.keystore
+          fi
+
+      - name: 📦 Build Release APK and Bundle
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
-          chmod +x gradlew
-          ./gradlew :app:assembleRelease :app:bundleRelease --no-daemon
+          ./gradlew :app:assembleRelease :app:bundleRelease --no-daemon --stacktrace
 
-      # apksigner দিয়ে নিশ্চিত সাইন করা
-      - name: Sign APK manually
+      - name: 🔏 Sign and Align APK with apksigner
         run: |
+          BUILD_TOOLS_DIR=$(ls -d $ANDROID_HOME/build-tools/* | sort -V | tail -n 1)
+          if [ -d "$ANDROID_HOME/build-tools/34.0.0" ]; then
+            BUILD_TOOLS_DIR="$ANDROID_HOME/build-tools/34.0.0"
+          fi
+          ZIPALIGN="$BUILD_TOOLS_DIR/zipalign"
+          APKSIGNER="$BUILD_TOOLS_DIR/apksigner"
+          
           APK_RAW=$(find app/build/outputs/apk/release/ -name "*.apk" | head -n 1)
-          echo "Found APK to sign: $APK_RAW"
-          $ANDROID_HOME/build-tools/34.0.0/zipalign -f -v -p 4 "$APK_RAW" app-release-aligned.apk
-          $ANDROID_HOME/build-tools/34.0.0/apksigner sign --ks app/release.keystore --ks-key-alias "${{ secrets.KEY_ALIAS }}" --ks-pass pass:"${{ secrets.KEYSTORE_PASSWORD }}" --key-pass pass:"${{ secrets.KEY_PASSWORD }}" --v1-signing-enabled true --v2-signing-enabled true --v3-signing-enabled true --out app-final-release.apk app-release-aligned.apk
-          $ANDROID_HOME/build-tools/34.0.0/apksigner verify --verbose app-final-release.apk
+          echo "Found APK to align and sign: $APK_RAW"
+          
+          $ZIPALIGN -f -v -p 4 "$APK_RAW" app-final-aligned.apk
+          $APKSIGNER sign --ks app/release.keystore \
+            --ks-key-alias "${{ secrets.KEY_ALIAS }}" \
+            --ks-pass pass:"${{ secrets.KEYSTORE_PASSWORD }}" \
+            --key-pass pass:"${{ secrets.KEY_PASSWORD }}" \
+            --v1-signing-enabled true \
+            --v2-signing-enabled true \
+            --v3-signing-enabled true \
+            --out app-final-release.apk \
+            app-final-aligned.apk
+            
+          echo "Verifying signed APK:"
+          $APKSIGNER verify --verbose app-final-release.apk
 
-      # শুধু সাইন করা রিলিজ ফাইল আপলোড
-      - name: Upload Signed APK
+      - name: 📤 Upload Signed Release APK
         uses: actions/upload-artifact@v4
         with:
           name: Production-Release-APK
           path: app-final-release.apk
+          retention-days: 30
+          if-no-files-found: error
 
-      - name: Upload Release AAB
+      - name: 📤 Upload Production Release AAB
         uses: actions/upload-artifact@v4
         with:
           name: Production-Release-AAB
           path: app/build/outputs/bundle/release/*.aab
+          retention-days: 30
+          if-no-files-found: error
