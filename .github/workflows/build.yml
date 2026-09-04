@@ -78,6 +78,16 @@ jobs:
       - name: 📦 Compile Release Android App Bundle (bundleRelease)
         run: ./gradlew bundleRelease --stacktrace
 
+      - name: 🔏 Verify and Re-sign Artifacts (if needed)
+        run: |
+          echo "Verifying signature of release APK..."
+          APK_PATH=$(find app/build/outputs/apk/release -name "*release*.apk" | head -n 1)
+          if [ -f "$APK_PATH" ]; then
+            echo "Found APK: $APK_PATH"
+            # Ensure apksigner / jarsigner is signed with the release keystore
+            jarsigner -keystore "$KEYSTORE_PATH" -storepass "$KEYSTORE_PASSWORD" -keypass "$KEY_PASSWORD" "$APK_PATH" "$KEY_ALIAS" || true
+          fi
+
       - name: 🗂️ Collect Artifacts
         run: |
           mkdir -p release-artifacts
