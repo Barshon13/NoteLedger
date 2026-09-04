@@ -629,54 +629,6 @@ fun SettingsScreen(
                 )
             }
 
-            // DRM & App License Section
-            Text(
-                text = "DRM & APP LICENSING",
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
-            )
-
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .testTag("drm_license_card"),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-            ) {
-                Column {
-                    SettingsActionItem(
-                        icon = Icons.Default.Security,
-                        title = "DRM License Status",
-                        subtitle = drmLicense?.status?.displayName ?: "Verified & Active",
-                        onClick = { showDrmDetailsDialog = true },
-                        tag = "drm_status_item"
-                    )
-
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
-
-                    SettingsActionItem(
-                        icon = Icons.Default.VerifiedUser,
-                        title = "Verify License & Certificate",
-                        subtitle = "Inspect hardware-bound DRM certificate, SHA-256 seal & signature",
-                        onClick = { showDrmDetailsDialog = true },
-                        tag = "drm_verify_cert_item"
-                    )
-
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
-
-                    SettingsActionItem(
-                        icon = Icons.Default.Lock,
-                        title = "Activate Custom License Key",
-                        subtitle = "Enter an offline or enterprise DRM activation code",
-                        onClick = { showActivateKeyDialog = true },
-                        tag = "drm_activate_key_item"
-                    )
-                }
-            }
-
             // Legal, Privacy & Copyright Section
             Text(
                 text = "LEGAL & PRIVACY",
@@ -698,7 +650,7 @@ fun SettingsScreen(
                     SettingsActionItem(
                         icon = Icons.Default.Policy,
                         title = "Privacy Policy",
-                        subtitle = "100% Offline-First • Zero PII tracking • 100% Ad-Free",
+                        subtitle = "Offline-first data protection & privacy guidelines",
                         onClick = { showPrivacyPolicyDialog = true },
                         tag = "privacy_policy_item"
                     )
@@ -708,67 +660,9 @@ fun SettingsScreen(
                     SettingsActionItem(
                         icon = Icons.Default.Info,
                         title = "Copyright & License Notice",
-                        subtitle = "© 2026 Mohammad Borshon Hossain. All rights reserved.",
+                        subtitle = "Copyright © 2026 Barshon Hossain. All Rights Reserved.",
                         onClick = { showCopyrightDialog = true },
                         tag = "copyright_notice_item"
-                    )
-                }
-            }
-
-            // Amazon Fire TV & Big Screen Mode Section
-            Text(
-                text = "BIG SCREEN & FIRE TV",
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
-            )
-
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .testTag("fire_tv_settings_card"),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        Surface(
-                            shape = CircleShape,
-                            color = MaterialTheme.colorScheme.primaryContainer,
-                            modifier = Modifier.size(36.dp)
-                        ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Icon(
-                                    imageVector = Icons.Default.Tv,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            }
-                        }
-                        Column {
-                            Text(
-                                text = "Amazon Fire TV & Android TV",
-                                style = MaterialTheme.typography.titleSmall,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Text(
-                                text = "Enabled • D-Pad Remote Navigation",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Native support for Amazon Fire OS (Fire TV Stick, Fire TV Cube, Omni TV) and Android TV with 16:9 Navigation Rail layout and D-Pad focus ring navigation.",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -810,7 +704,7 @@ fun SettingsScreen(
                     HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "© 2026 Mohammad Borshon Hossain. All rights reserved.",
+                        text = "Copyright © 2026 Barshon Hossain. All Rights Reserved.",
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.SemiBold
@@ -1199,25 +1093,25 @@ fun SettingsScreen(
     // Privacy Policy Dialog
     if (showPrivacyPolicyDialog) {
         val privacyPolicyFullText = """
-            Privacy Policy for Notes & Expense Tracker
-            Last Updated: August 2026
+            Privacy Policy for NoteLedger
+            Last Updated: 2026
 
             1. Offline-First Privacy Architecture
-            Notes & Expense Tracker operates purely client-side on your Android device. All notes, expense transactions, category budgets, and financial records are stored exclusively in your local on-device SQLite/Room database.
+            NoteLedger operates purely client-side on your Android device. All notes, expense transactions, category budgets, and financial records are stored exclusively in your local on-device SQLite/Room database.
 
             2. Zero Personal Data Collection
             We do not collect, harvest, transmit, or share any Personally Identifiable Information (PII), such as your name, contacts, photos, or GPS location.
 
-            3. Local Encrypted & Sandboxed Storage
+            3. Local Sandboxed Storage
             Your data is protected by the Android application sandbox. We do not maintain any cloud servers or external databases for your note or expense data.
 
-            4. 100% Ad-Free & Offline Experience
-            This application contains zero advertisements and zero ad-tracking SDKs. No analytics or identifiers are collected or transmitted.
+            4. Data Protection & Offline Utilities
+            All notes, exports (PDF/CSV/JSON), and data calculations are processed entirely on-device without remote telemetry or unauthorized tracking.
 
             5. Developer & Contact
-            Developer: Mohammad Borshon Hossain
+            Developer: Barshon Hossain
             Email: mohammadborshonhossain6@gmail.com
-            Copyright © 2026 Mohammad Borshon Hossain. All rights reserved.
+            Copyright © 2026 Barshon Hossain. All Rights Reserved.
         """.trimIndent()
 
         AlertDialog(
@@ -1301,19 +1195,19 @@ fun SettingsScreen(
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     Text(
-                        text = "Notes & Expense Tracker",
+                        text = "NoteLedger",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary
                     )
                     Text(
-                        text = "Copyright © 2026 Mohammad Borshon Hossain.\nAll Rights Reserved.",
+                        text = "Copyright © 2026 Barshon Hossain.\nAll Rights Reserved.",
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.SemiBold
                     )
                     HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f))
                     Text(
-                        text = "All design layouts, visual components, DRM systems, database schemas, code architecture, and intellectual property in this application are protected under international copyright and intellectual property laws.",
+                        text = "All design layouts, visual components, database schemas, code architecture, and intellectual property in this application are protected under international copyright and intellectual property laws.",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
