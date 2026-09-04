@@ -8,41 +8,46 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Java
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
 
+      # Keystore ডিকোড করা
       - name: Decode Keystore
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > app/release.keystore
 
-      - name: Compile Release Only
+      # পারমিশন দিয়ে শুধু রিলিজ বিল্ড চালানো
+      - name: Build Release APK and Bundle
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
           chmod +x gradlew
-          ./gradlew :app:assembleRelease :app:bundleRelease --no-daemon --stacktrace
+          ./gradlew :app:assembleRelease :app:bundleRelease --no-daemon
 
-      - name: Verify Output Files
+      # apksigner দিয়ে নিশ্চিত সাইন করা
+      - name: Sign APK manually
         run: |
-          ls -la app/build/outputs/apk/release/
-          ls -la app/build/outputs/bundle/release/
+          $ANDROID_HOME/build-tools/34.0.0/zipalign -v -p 4 app/build/outputs/apk/release/*-unsigned.apk app-release-aligned.apk
+          $ANDROID_HOME/build-tools/34.0.0/apksigner sign --ks app/release.keystore --ks-key-alias ${{ secrets.KEY_ALIAS }} --ks-pass pass:${{ secrets.KEYSTORE_PASSWORD }} --key-pass pass:${{ secrets.KEY_PASSWORD }} --out app-final-release.apk app-release-aligned.apk
 
-      - name: Upload Release APK
+      # শুধু সাইন করা রিলিজ ফাইল আপলোড
+      - name: Upload Signed APK
         uses: actions/upload-artifact@v4
         with:
-          name: app-release
-          path: app/build/outputs/apk/release/*.apk
+          name: Production-Release-APK
+          path: app-final-release.apk
 
       - name: Upload Release AAB
         uses: actions/upload-artifact@v4
         with:
-          name: app-bundle
+          name: Production-Release-AAB
           path: app/build/outputs/bundle/release/*.aab
