@@ -25,37 +25,24 @@ android {
 
   signingConfigs {
     create("release") {
-      val keystorePath = System.getenv("KEYSTORE_PATH") ?: "release.keystore"
-      val keystoreFile = if (file(keystorePath).isAbsolute) {
-        file(keystorePath)
-      } else {
-        file("${rootDir}/app/$keystorePath").let { if (it.exists()) it else file("${rootDir}/$keystorePath") }
-      }
-
-      storeFile = keystoreFile
+      storeFile = file("release.keystore")
       storePassword = System.getenv("KEYSTORE_PASSWORD")
       keyAlias = System.getenv("KEY_ALIAS")
-      keyPassword = System.getenv("KEY_PASSWORD") ?: System.getenv("KEYSTORE_PASSWORD")
-    }
-    create("debugConfig") {
-      storeFile = file("${rootDir}/debug.keystore")
-      storePassword = "android"
-      keyAlias = "androiddebugkey"
-      keyPassword = "android"
+      keyPassword = System.getenv("KEY_PASSWORD")
+      enableV1Signing = true
+      enableV2Signing = true
     }
   }
 
   buildTypes {
-    release {
+    getByName("debug") {
+      isDebuggable = true
+    }
+    getByName("release") {
       isDebuggable = false
       isMinifyEnabled = false
       isShrinkResources = false
-      isCrunchPngs = false
       signingConfig = signingConfigs.getByName("release")
-    }
-    debug {
-      isDebuggable = true
-      signingConfig = signingConfigs.getByName("debugConfig")
     }
   }
   compileOptions {
