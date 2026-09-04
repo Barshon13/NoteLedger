@@ -25,21 +25,17 @@ android {
 
   signingConfigs {
     create("release") {
-      val envKeystorePath = System.getenv("KEYSTORE_PATH")
-      val keystoreFile = when {
-        envKeystorePath != null && file(envKeystorePath).exists() -> file(envKeystorePath)
-        file("${rootDir}/app/release.keystore").exists() -> file("${rootDir}/app/release.keystore")
-        file("${rootDir}/keystore/release.keystore").exists() -> file("${rootDir}/keystore/release.keystore")
-        file("${rootDir}/release.keystore").exists() -> file("${rootDir}/release.keystore")
-        else -> null
+      val keystorePath = System.getenv("KEYSTORE_PATH") ?: "release.keystore"
+      val keystoreFile = if (file(keystorePath).isAbsolute) {
+        file(keystorePath)
+      } else {
+        file("${rootDir}/app/$keystorePath").let { if (it.exists()) it else file("${rootDir}/$keystorePath") }
       }
 
-      if (keystoreFile != null && keystoreFile.exists()) {
-        storeFile = keystoreFile
-        storePassword = System.getenv("KEYSTORE_PASSWORD") ?: "NoteLedgerKey2026!"
-        keyAlias = System.getenv("KEY_ALIAS") ?: "noteledger"
-        keyPassword = System.getenv("KEY_PASSWORD") ?: System.getenv("KEYSTORE_PASSWORD") ?: "NoteLedgerKey2026!"
-      }
+      storeFile = keystoreFile
+      storePassword = System.getenv("KEYSTORE_PASSWORD")
+      keyAlias = System.getenv("KEY_ALIAS")
+      keyPassword = System.getenv("KEY_PASSWORD") ?: System.getenv("KEYSTORE_PASSWORD")
     }
     create("debugConfig") {
       storeFile = file("${rootDir}/debug.keystore")
@@ -51,12 +47,16 @@ android {
 
   buildTypes {
     release {
-      isCrunchPngs = false
+      isDebuggable = false
       isMinifyEnabled = false
-      proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+      isShrinkResources = false
+      isCrunchPngs = false
       signingConfig = signingConfigs.getByName("release")
     }
-    debug { signingConfig = signingConfigs.getByName("debugConfig") }
+    debug {
+      isDebuggable = true
+      signingConfig = signingConfigs.getByName("debugConfig")
+    }
   }
   compileOptions {
     sourceCompatibility = JavaVersion.VERSION_11

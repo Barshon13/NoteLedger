@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   build-and-sign:
-    name: Build, Sign & Release Artifacts
+    name: Build & Release Signed Production Artifacts
     runs-on: ubuntu-latest
     timeout-minutes: 40
 
@@ -39,117 +39,33 @@ jobs:
       - name: 🔑 Grant Execute Permission to gradlew
         run: chmod +x gradlew
 
-      - name: 🔐 Prepare Signing Keystore
-        id: setup-keystore
+      - name: 🔐 Decode Keystore
         run: |
-          mkdir -p app keystore
+          mkdir -p app
           if [ -n "${{ secrets.KEYSTORE_BASE64 }}" ]; then
-            echo "Decoding release keystore from GitHub Secrets into app/release.keystore..."
             echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > app/release.keystore
-            cp app/release.keystore keystore/release.keystore
-            echo "KEYSTORE_PATH=${GITHUB_WORKSPACE}/app/release.keystore" >> $GITHUB_ENV
-            echo "KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }}" >> $GITHUB_ENV
-            echo "KEY_ALIAS=${{ secrets.KEY_ALIAS }}" >> $GITHUB_ENV
-            echo "KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}" >> $GITHUB_ENV
           elif [ -f "keystore/release.keystore" ]; then
-            echo "Using committed release.keystore..."
             cp keystore/release.keystore app/release.keystore
-            echo "KEYSTORE_PATH=${GITHUB_WORKSPACE}/app/release.keystore" >> $GITHUB_ENV
-            echo "KEYSTORE_PASSWORD=NoteLedgerKey2026!" >> $GITHUB_ENV
-            echo "KEY_ALIAS=noteledger" >> $GITHUB_ENV
-            echo "KEY_PASSWORD=NoteLedgerKey2026!" >> $GITHUB_ENV
-          else
-            echo "Generating production release keystore..."
-            keytool -genkey -v \
-              -keystore app/release.keystore \
-              -alias noteledger \
-              -keyalg RSA \
-              -keysize 2048 \
-              -validity 10000 \
-              -storepass NoteLedgerKey2026! \
-              -keypass NoteLedgerKey2026! \
-              -dname "CN=NoteLedger, OU=Mobile, O=NoteLedgerApp, L=Global, ST=Mobile, C=US"
-            cp app/release.keystore keystore/release.keystore
-            echo "KEYSTORE_PATH=${GITHUB_WORKSPACE}/app/release.keystore" >> $GITHUB_ENV
-            echo "KEYSTORE_PASSWORD=NoteLedgerKey2026!" >> $GITHUB_ENV
-            echo "KEY_ALIAS=noteledger" >> $GITHUB_ENV
-            echo "KEY_PASSWORD=NoteLedgerKey2026!" >> $GITHUB_ENV
           fi
 
       - name: 🧪 Run Unit & Robolectric Tests
         run: ./gradlew testDebugUnitTest --continue
 
-      - name: 📦 Compile Release APK (assembleRelease)
-        run: ./gradlew assembleRelease --stacktrace
-
-      - name: 📦 Compile Release Android App Bundle (bundleRelease)
-        run: ./gradlew bundleRelease --stacktrace
-
-      - name: 🔏 Align & Sign APK using Android SDK Build-Tools
+      - name: 📦 Build Release APK and AAB
+        env:
+          KEYSTORE_PATH: "release.keystore"
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
-          echo "Finding Android Build Tools..."
-          BUILD_TOOLS_DIR=$(ls -d $ANDROID_HOME/build-tools/* | sort -V | tail -n 1)
-          if [ -d "$ANDROID_HOME/build-tools/34.0.0" ]; then
-            BUILD_TOOLS_DIR="$ANDROID_HOME/build-tools/34.0.0"
-          fi
-          ZIPALIGN="$BUILD_TOOLS_DIR/zipalign"
-          APKSIGNER="$BUILD_TOOLS_DIR/apksigner"
-          
-          echo "Using build tools from: $BUILD_TOOLS_DIR"
-          
-          RAW_APK=$(find app/build/outputs/apk/release -name "*.apk" | head -n 1)
-          echo "Found raw APK: $RAW_APK"
-          
-          # 1. 4-byte Page Alignment
-          $ZIPALIGN -f -v -p 4 "$RAW_APK" app-release-aligned.apk
-          
-          # 2. Direct apksigner with V1, V2, V3 Schemes
-          $APKSIGNER sign \
-            --ks app/release.keystore \
-            --ks-key-alias "${{ secrets.KEY_ALIAS }}" \
-            --ks-pass pass:"${{ secrets.KEYSTORE_PASSWORD }}" \
-            --key-pass pass:"${{ secrets.KEY_PASSWORD }}" \
-            --v1-signing-enabled true \
-            --v2-signing-enabled true \
-            --v3-signing-enabled true \
-            --out app-release-signed.apk \
-            app-release-aligned.apk
-            
-          # 3. Verify signature strictly
-          echo "Verifying apksigner output:"
-          $APKSIGNER verify --verbose --print-certs app-release-signed.apk
-
-      - name: 🔏 Sign Release Android App Bundle (AAB) using Jarsigner
-        run: |
-          RAW_AAB=$(find app/build/outputs/bundle/release -name "*.aab" | head -n 1)
-          echo "Found raw AAB: $RAW_AAB"
-          cp "$RAW_AAB" app-release.aab
-          
-          echo "Signing AAB with jarsigner..."
-          jarsigner -verbose \
-            -sigalg SHA256withRSA \
-            -digestalg SHA-256 \
-            -keystore app/release.keystore \
-            -storepass "${{ secrets.KEYSTORE_PASSWORD }}" \
-            -keypass "${{ secrets.KEY_PASSWORD }}" \
-            app-release.aab \
-            "${{ secrets.KEY_ALIAS }}"
-            
-          echo "Verifying AAB signature:"
-          jarsigner -verify -verbose -certs app-release.aab
-
-      - name: 🗂️ Collect Artifacts
-        run: |
-          mkdir -p release-artifacts
-          cp app-release-signed.apk release-artifacts/NoteLedger-v2.00-release-signed.apk
-          cp app-release.aab release-artifacts/NoteLedger-v2.00-release.aab
-          ls -lh release-artifacts/
+          chmod +x gradlew
+          ./gradlew assembleRelease bundleRelease --stacktrace
 
       - name: 📤 Upload Signed Release APK
         uses: actions/upload-artifact@v4
         with:
           name: NoteLedger-Signed-APK
-          path: release-artifacts/NoteLedger-v2.00-release-signed.apk
+          path: app/build/outputs/apk/release/app-release.apk
           retention-days: 30
           if-no-files-found: error
 
@@ -157,7 +73,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: NoteLedger-Release-AAB
-          path: release-artifacts/NoteLedger-v2.00-release.aab
+          path: app/build/outputs/bundle/release/app-release.aab
           retention-days: 30
           if-no-files-found: error
 
