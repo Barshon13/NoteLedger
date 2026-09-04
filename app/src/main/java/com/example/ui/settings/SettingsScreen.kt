@@ -153,13 +153,8 @@ fun SettingsScreen(
     var inputLicenseKey by remember { mutableStateOf("") }
     var pasteJsonText by remember { mutableStateOf("") }
     var statusMessage by remember { mutableStateOf<String?>(null) }
-    var showAdsConfigDialog by remember { mutableStateOf(false) }
 
     val drmLicense by com.example.drm.DrmLicenseManager.licenseState.collectAsStateWithLifecycle()
-    val adsConfig by com.example.ads.RemoteAdsConfigService.config.collectAsStateWithLifecycle()
-    val isFetchingAdsConfig by com.example.ads.RemoteAdsConfigService.isFetching.collectAsStateWithLifecycle()
-    val lastAdsFetchStatus by com.example.ads.RemoteAdsConfigService.lastFetchStatus.collectAsStateWithLifecycle()
-    var inputAdsConfigUrl by remember { mutableStateOf(com.example.ads.RemoteAdsConfigService.getSavedUrl(context)) }
 
     // File Picker for Export (Save JSON to file)
     val exportFileLauncher = rememberLauncherForActivityResult(
@@ -632,48 +627,6 @@ fun SettingsScreen(
                     onClick = { showFirstClearDialog = true },
                     tag = "clear_all_data_button"
                 )
-            }
-
-            // Remote Ads & AdMob Configuration Section
-            Text(
-                text = "REMOTE ADS CONFIGURATION",
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
-            )
-
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .testTag("remote_ads_config_card"),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-            ) {
-                Column {
-                    SettingsActionItem(
-                        icon = Icons.Default.Campaign,
-                        title = "Remote Ads Status & GitHub URL",
-                        subtitle = if (adsConfig.adsEnabled) "Ads Enabled • Live Sync Active" else "Ads Disabled via Remote Config",
-                        onClick = { showAdsConfigDialog = true },
-                        tag = "remote_ads_status_item"
-                    )
-
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
-
-                    SettingsActionItem(
-                        icon = Icons.Default.Refresh,
-                        title = "Sync Remote Ads Config",
-                        subtitle = if (isFetchingAdsConfig) "Fetching latest config from GitHub..." else (lastAdsFetchStatus ?: "Tap to re-sync from GitHub"),
-                        onClick = {
-                            com.example.ads.RemoteAdsConfigService.fetchRemoteConfig(context, inputAdsConfigUrl) { success, msg ->
-                                statusMessage = if (success) "Ads configuration synced!" else "Sync error: $msg"
-                            }
-                        },
-                        tag = "sync_ads_config_item"
-                    )
-                }
             }
 
             // DRM & App License Section
@@ -1374,121 +1327,6 @@ fun SettingsScreen(
             confirmButton = {
                 Button(onClick = { showCopyrightDialog = false }) {
                     Text("Understood")
-                }
-            }
-        )
-    }
-
-    // Ads Configuration Dialog
-    if (showAdsConfigDialog) {
-        AlertDialog(
-            onDismissRequest = { showAdsConfigDialog = false },
-            title = {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.Default.Campaign,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "Remote Ads Configuration",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            },
-            text = {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .verticalScroll(rememberScrollState()),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    Text(
-                        text = "The app fetches ads configuration from GitHub on startup to dynamically manage ad IDs and display toggles.",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-
-                    OutlinedTextField(
-                        value = inputAdsConfigUrl,
-                        onValueChange = { inputAdsConfigUrl = it },
-                        label = { Text("GitHub Raw JSON Config URL") },
-                        placeholder = { Text("https://raw.githubusercontent.com/.../ads_config.json") },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .testTag("ads_config_url_input"),
-                        singleLine = false,
-                        maxLines = 3,
-                        textStyle = MaterialTheme.typography.bodySmall
-                    )
-
-                    Surface(
-                        shape = RoundedCornerShape(8.dp),
-                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Column(modifier = Modifier.padding(10.dp)) {
-                            Text(
-                                text = "Active Configuration",
-                                style = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = "• Global Ads: ${if (adsConfig.adsEnabled) "ON" else "OFF"}\n" +
-                                        "• Banner Ads: ${if (adsConfig.bannerAdEnabled) "ON" else "OFF"}\n" +
-                                        "• Interstitial Ads: ${if (adsConfig.interstitialAdEnabled) "ON" else "OFF"}\n" +
-                                        "• Interstitial Frequency: Every ${adsConfig.interstitialIntervalActions} actions\n" +
-                                        "• Banner Unit ID: ${adsConfig.bannerAdUnitId}\n" +
-                                        "• Interstitial Unit ID: ${adsConfig.interstitialAdUnitId}",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-
-                    OutlinedButton(
-                        onClick = {
-                            val shown = com.example.ads.AdManager.showInterstitialAd(context as android.app.Activity)
-                            if (!shown) {
-                                statusMessage = "Ad is pre-loading or fetching from AdMob server. Please wait 2-3 seconds and tap again!"
-                            }
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .testTag("test_ad_button")
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Campaign,
-                            contentDescription = null,
-                            modifier = Modifier.size(18.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Trigger Test Interstitial Ad Now")
-                    }
-                }
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        com.example.ads.RemoteAdsConfigService.setSavedUrl(context, inputAdsConfigUrl.trim())
-                        com.example.ads.RemoteAdsConfigService.fetchRemoteConfig(context, inputAdsConfigUrl.trim()) { success, msg ->
-                            statusMessage = if (success) "Saved and updated from GitHub!" else "Saved URL, but fetch returned: $msg"
-                        }
-                        showAdsConfigDialog = false
-                    },
-                    modifier = Modifier.testTag("save_ads_config_button")
-                ) {
-                    Text("Save & Sync")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showAdsConfigDialog = false }) {
-                    Text("Close")
                 }
             }
         )
