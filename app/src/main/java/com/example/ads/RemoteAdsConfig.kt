@@ -5,8 +5,11 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class RemoteAdsConfig(
+    @Json(name = "show_ads")
+    val showAds: Boolean? = null,
+
     @Json(name = "ads_enabled")
-    val adsEnabled: Boolean = true,
+    val adsEnabledField: Boolean? = null,
 
     @Json(name = "banner_ad_enabled")
     val bannerAdEnabled: Boolean = true,
@@ -28,4 +31,11 @@ data class RemoteAdsConfig(
 
     @Json(name = "interstitial_interval_actions")
     val interstitialIntervalActions: Int = 2
-)
+) {
+    /**
+     * Master ads toggle. Returns true if either show_ads or ads_enabled is true,
+     * defaulting to true if not specified.
+     */
+    val adsEnabled: Boolean
+        get() = showAds ?: adsEnabledField ?: true
+}
