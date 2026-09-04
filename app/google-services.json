@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "917620094168",
+    "project_id": "note-fc82b",
+    "storage_bucket": "note-fc82b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:917620094168:android:603c7452b580df80d193ad",
+        "android_client_info": {
+          "package_name": "com.barshon.noteledger"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCF1bjbVKwda2_r9f-JUItiqbNNGA2RULI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:917620094168:android:603c7452b580df80d193ad",
+        "android_client_info": {
+          "package_name": "com.borshon.noteledger"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCF1bjbVKwda2_r9f-JUItiqbNNGA2RULI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
