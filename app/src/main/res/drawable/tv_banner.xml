@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp"
+    android:height="180dp"
+    android:viewportWidth="320"
+    android:viewportHeight="180">
+    <!-- Dark TV Canvas Background -->
+    <path
+        android:fillColor="#0B132B"
+        android:pathData="M0,0h320v180h-320z" />
+
+    <!-- Gradient Accent Strip -->
+    <path
+        android:fillColor="#1C2541"
+        android:pathData="M0,130h320v50h-320z" />
+
+    <!-- Notes & Ledger Accent Glow -->
+    <path
+        android:fillColor="#3A506B"
+        android:pathData="M0,0h320v8h-320z" />
+
+    <!-- Note Icon Symbol -->
+    <path
+        android:fillColor="#48CAE4"
+        android:pathData="M70,50 h40 c4.4,0 8,3.6 8,8 v64 c0,4.4 -3.6,8 -8,8 h-40 c-4.4,0 -8,-3.6 -8,-8 v-64 c0,-4.4 3.6,-8 8,-8 z" />
+    <path
+        android:fillColor="#0B132B"
+        android:pathData="M76,68 h28 v4 h-28 z M76,82 h28 v4 h-28 z M76,96 h20 v4 h-20 z" />
+
+    <!-- Expense Wallet Symbol -->
+    <path
+        android:fillColor="#52B788"
+        android:pathData="M130,60 h50 c5.5,0 10,4.5 10,10 v48 c0,5.5 -4.5,10 -10,10 h-50 c-5.5,0 -10,-4.5 -10,-10 v-48 c0,-5.5 4.5,-10 10,-10 z" />
+    <path
+        android:fillColor="#0B132B"
+        android:pathData="M170,80 h16 c2.2,0 4,1.8 4,4 v10 c0,2.2 -1.8,4 -4,4 h-16 c-2.2,0 -4,-1.8 -4,-4 v-10 c0,-2.2 1.8,-4 4,-4 z" />
+    <path
+        android:fillColor="#74C69D"
+        android:pathData="M176,87 a2,2 0 1,0 0.1,0 z" />
+
+    <!-- TV Label Typography Accent -->
+    <path
+        android:fillColor="#90E0EF"
+        android:pathData="M210,75 h60 v6 h-60 z M210,89 h45 v5 h-45 z M210,102 h30 v4 h-30 z" />
+</vector>
