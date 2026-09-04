@@ -156,13 +156,13 @@ fun ExpensesScreen(
                         .fillMaxWidth()
                         .padding(4.dp)
                         .horizontalScroll(rememberScrollState()),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     ExpensesViewMode.entries.forEach { mode ->
                         val isSelected = viewMode == mode
                         Surface(
                             modifier = Modifier
-                                .weight(1f, fill = false)
                                 .tvFocusHighlight(shape = RoundedCornerShape(10.dp), onClick = { viewMode = mode })
                                 .clickable { viewMode = mode }
                                 .testTag("expenses_tab_${mode.name.lowercase()}"),
@@ -171,7 +171,7 @@ fun ExpensesScreen(
                             shadowElevation = if (isSelected) 2.dp else 0.dp
                         ) {
                             Row(
-                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                                modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
                                 horizontalArrangement = Arrangement.Center,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
@@ -186,7 +186,9 @@ fun ExpensesScreen(
                                     text = mode.title,
                                     style = MaterialTheme.typography.labelMedium,
                                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                    color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                                    color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                                    maxLines = 1,
+                                    softWrap = false
                                 )
                             }
                         }
@@ -268,62 +270,106 @@ fun ExpensesScreen(
                                     ) {
                                         Text(
                                             text = "$currentMonthName Spending",
-                                            style = MaterialTheme.typography.titleSmall,
-                                            fontWeight = FontWeight.Medium,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            modifier = Modifier.weight(1f, fill = false)
                                         )
-                                        Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
-                                            AssistChip(
+
+                                        Spacer(modifier = Modifier.width(8.dp))
+
+                                        Row(
+                                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Surface(
                                                 onClick = { viewMode = ExpensesViewMode.DASHBOARD },
-                                                label = { Text("Trends") },
-                                                leadingIcon = {
+                                                shape = RoundedCornerShape(12.dp),
+                                                color = MaterialTheme.colorScheme.surface,
+                                                border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.outlineVariant),
+                                                modifier = Modifier.testTag("trends_shortcut_button")
+                                            ) {
+                                                Row(
+                                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                                                    verticalAlignment = Alignment.CenterVertically,
+                                                    horizontalArrangement = Arrangement.Center
+                                                ) {
                                                     Icon(
                                                         imageVector = Icons.Default.BarChart,
                                                         contentDescription = null,
-                                                        modifier = Modifier.size(14.dp)
+                                                        tint = MaterialTheme.colorScheme.primary,
+                                                        modifier = Modifier.size(16.dp)
                                                     )
-                                                },
-                                                colors = AssistChipDefaults.assistChipColors(
-                                                    containerColor = MaterialTheme.colorScheme.surface,
-                                                    labelColor = MaterialTheme.colorScheme.primary
-                                                ),
-                                                shape = RoundedCornerShape(12.dp)
-                                            )
+                                                    Spacer(modifier = Modifier.width(4.dp))
+                                                    Text(
+                                                        text = "Trends",
+                                                        style = MaterialTheme.typography.labelMedium,
+                                                        fontWeight = FontWeight.SemiBold,
+                                                        color = MaterialTheme.colorScheme.primary,
+                                                        maxLines = 1,
+                                                        softWrap = false
+                                                    )
+                                                }
+                                            }
 
-                                            AssistChip(
+                                            Surface(
                                                 onClick = onOpenBudgetPlanner,
-                                                label = { Text(if (hasBudget) "Budget" else "+ Budget") },
-                                                leadingIcon = {
+                                                shape = RoundedCornerShape(12.dp),
+                                                color = MaterialTheme.colorScheme.surface,
+                                                border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.outlineVariant),
+                                                modifier = Modifier.testTag("budget_shortcut_button")
+                                            ) {
+                                                Row(
+                                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                                                    verticalAlignment = Alignment.CenterVertically,
+                                                    horizontalArrangement = Arrangement.Center
+                                                ) {
                                                     Icon(
                                                         imageVector = Icons.Default.AccountBalanceWallet,
                                                         contentDescription = null,
-                                                        modifier = Modifier.size(14.dp)
+                                                        tint = MaterialTheme.colorScheme.primary,
+                                                        modifier = Modifier.size(16.dp)
                                                     )
-                                                },
-                                                colors = AssistChipDefaults.assistChipColors(
-                                                    containerColor = MaterialTheme.colorScheme.surface,
-                                                    labelColor = MaterialTheme.colorScheme.primary
-                                                ),
-                                                shape = RoundedCornerShape(12.dp)
-                                            )
+                                                    Spacer(modifier = Modifier.width(4.dp))
+                                                    Text(
+                                                        text = if (hasBudget) "Budget" else "+ Budget",
+                                                        style = MaterialTheme.typography.labelMedium,
+                                                        fontWeight = FontWeight.SemiBold,
+                                                        color = MaterialTheme.colorScheme.primary,
+                                                        maxLines = 1,
+                                                        softWrap = false
+                                                    )
+                                                }
+                                            }
 
                                             if (!isToday) {
-                                                AssistChip(
+                                                Surface(
                                                     onClick = onJumpToToday,
-                                                    label = { Text("Today") },
-                                                    leadingIcon = {
+                                                    shape = RoundedCornerShape(12.dp),
+                                                    color = MaterialTheme.colorScheme.surface,
+                                                    border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.outlineVariant)
+                                                ) {
+                                                    Row(
+                                                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                                                        verticalAlignment = Alignment.CenterVertically
+                                                    ) {
                                                         Icon(
                                                             imageVector = Icons.Default.Today,
                                                             contentDescription = null,
-                                                            modifier = Modifier.size(14.dp)
+                                                            tint = MaterialTheme.colorScheme.primary,
+                                                            modifier = Modifier.size(16.dp)
                                                         )
-                                                    },
-                                                    colors = AssistChipDefaults.assistChipColors(
-                                                        containerColor = MaterialTheme.colorScheme.surface,
-                                                        labelColor = MaterialTheme.colorScheme.primary
-                                                    ),
-                                                    shape = RoundedCornerShape(12.dp)
-                                                )
+                                                        Spacer(modifier = Modifier.width(4.dp))
+                                                        Text(
+                                                            text = "Today",
+                                                            style = MaterialTheme.typography.labelMedium,
+                                                            fontWeight = FontWeight.SemiBold,
+                                                            color = MaterialTheme.colorScheme.primary,
+                                                            maxLines = 1,
+                                                            softWrap = false
+                                                        )
+                                                    }
+                                                }
                                             }
                                         }
                                     }
