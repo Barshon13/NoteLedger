@@ -86,6 +86,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -1448,6 +1449,26 @@ fun SettingsScreen(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
+                    }
+
+                    OutlinedButton(
+                        onClick = {
+                            val shown = com.example.ads.AdManager.showInterstitialAd(context as android.app.Activity)
+                            if (!shown) {
+                                statusMessage = "Ad is pre-loading or fetching from AdMob server. Please wait 2-3 seconds and tap again!"
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("test_ad_button")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Campaign,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Trigger Test Interstitial Ad Now")
                     }
                 }
             },

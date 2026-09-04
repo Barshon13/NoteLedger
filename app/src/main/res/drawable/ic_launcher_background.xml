@@ -5,6 +5,8 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
+    
+    <!-- Deep Midnight Luxury Royal Canvas -->
     <path
         android:pathData="M0,0h108v108h-108z">
         <aapt:attr name="android:fillColor">
@@ -14,10 +16,41 @@
                 android:endX="108"
                 android:endY="108"
                 android:type="linear">
-                <item android:color="#1E293B" android:offset="0.0" />
-                <item android:color="#0F172A" android:offset="1.0" />
+                <item android:color="#0B0F19" android:offset="0.0" />
+                <item android:color="#171C2E" android:offset="0.5" />
+                <item android:color="#090D16" android:offset="1.0" />
             </gradient>
         </aapt:attr>
     </path>
-</vector>
 
+    <!-- Subtle Golden Radial Ambient Accent -->
+    <path
+        android:pathData="M54,54m-46,0a46,46 0 1,0 92,0a46,46 0 1,0 -92,0">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="54"
+                android:startY="20"
+                android:endX="54"
+                android:endY="88"
+                android:type="linear">
+                <item android:color="#20F59E0B" android:offset="0.0" />
+                <item android:color="#00000000" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Subtle Luxury Geometric Backdrop Hexagon Pattern -->
+    <path
+        android:strokeWidth="1"
+        android:strokeAlpha="0.15"
+        android:strokeColor="#F59E0B"
+        android:fillColor="#00000000"
+        android:pathData="M54,16 L86,34 L86,74 L54,92 L22,74 L22,34 Z" />
+
+    <path
+        android:strokeWidth="0.75"
+        android:strokeAlpha="0.25"
+        android:strokeColor="#FCD34D"
+        android:fillColor="#00000000"
+        android:pathData="M54,24 L78,38 L78,70 L54,84 L30,70 L30,38 Z" />
+</vector>

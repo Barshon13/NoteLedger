@@ -1,9 +1,160 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:width="66dp"
-        android:height="66dp"
-        android:drawable="@drawable/app_launcher_icon_1787652474915"
-        android:gravity="center" />
-</layer-list>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
 
+    <!-- Outer Soft Drop Shadow for Ledger Book -->
+    <path
+        android:fillColor="#33000000"
+        android:pathData="M28,27 h44 c5.5,0 10,4.5 10,10 v46 c0,5.5 -4.5,10 -10,10 h-44 c-5.5,0 -10,-4.5 -10,-10 v-46 c0,-5.5 4.5,-10 10,-10 z" />
+
+    <!-- Ledger Leather Journal Outer Body -->
+    <path
+        android:pathData="M26,24 h44 c5,0 9,4 9,9 v48 c0,5 -4,9 -9,9 h-44 c-5,0 -9,-4 -9,-9 v-48 c0,-5 4,-9 9,-9 z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="26"
+                android:startY="24"
+                android:endX="79"
+                android:endY="90"
+                android:type="linear">
+                <item android:color="#1E293B" android:offset="0.0" />
+                <item android:color="#0F172A" android:offset="0.6" />
+                <item android:color="#020617" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Metallic Gold Outer Border Trim -->
+    <path
+        android:strokeWidth="1.5"
+        android:pathData="M26,24 h44 c5,0 9,4 9,9 v48 c0,5 -4,9 -9,9 h-44 c-5,0 -9,-4 -9,-9 v-48 c0,-5 4,-9 9,-9 z">
+        <aapt:attr name="android:strokeColor">
+            <gradient
+                android:startX="26"
+                android:startY="24"
+                android:endX="79"
+                android:endY="90"
+                android:type="linear">
+                <item android:color="#FDE68A" android:offset="0.0" />
+                <item android:color="#D97706" android:offset="0.5" />
+                <item android:color="#F59E0B" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Leather Book Spine Binding on Left -->
+    <path
+        android:pathData="M26,24 h7 v66 h-7 c-5,0 -9,-4 -9,-9 v-48 c0,-5 4,-9 9,-9 z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="17"
+                android:startY="24"
+                android:endX="33"
+                android:endY="90"
+                android:type="linear">
+                <item android:color="#0F172A" android:offset="0.0" />
+                <item android:color="#020617" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Golden Spine Stitching Line -->
+    <path
+        android:strokeWidth="1"
+        android:strokeColor="#D97706"
+        android:pathData="M33,25 v64" />
+
+    <!-- Golden Ribbon Bookmark -->
+    <path
+        android:pathData="M39,24 h8 v24 l-4,-3 l-4,3 z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="39"
+                android:startY="24"
+                android:endX="47"
+                android:endY="48"
+                android:type="linear">
+                <item android:color="#FBBF24" android:offset="0.0" />
+                <item android:color="#B45309" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Note & Ledger Lines (Golden Inlay) -->
+    <path
+        android:fillColor="#FBBF24"
+        android:fillAlpha="0.9"
+        android:pathData="M51,34 h18 v2.5 h-18 z M51,41 h18 v2.5 h-18 z" />
+
+    <!-- Finance Growth Sparkline / Trend Bar inside Ledger -->
+    <path
+        android:fillColor="#34D399"
+        android:pathData="M40,68 h5 v10 h-5 z" />
+    <path
+        android:fillColor="#38BDF8"
+        android:pathData="M48,62 h5 v16 h-5 z" />
+    <path
+        android:fillColor="#F59E0B"
+        android:pathData="M56,54 h5 v24 h-5 z" />
+    <path
+        android:fillColor="#10B981"
+        android:pathData="M64,48 h5 v30 h-5 z" />
+
+    <!-- Upward Trend Line Overlay -->
+    <path
+        android:strokeWidth="2"
+        android:strokeColor="#FDE68A"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="#00000000"
+        android:pathData="M42,66 L50,60 L58,52 L67,45" />
+
+    <!-- Premium Golden Fountain Pen / Quill Stylus -->
+    <group
+        android:pivotX="78"
+        android:pivotY="70"
+        android:rotation="-35">
+        <!-- Pen Body -->
+        <path
+            android:pathData="M74,38 h8 v32 h-8 z">
+            <aapt:attr name="android:fillColor">
+                <gradient
+                    android:startX="74"
+                    android:startY="38"
+                    android:endX="82"
+                    android:endY="70"
+                    android:type="linear">
+                    <item android:color="#FDE68A" android:offset="0.0" />
+                    <item android:color="#D97706" android:offset="0.5" />
+                    <item android:color="#F59E0B" android:offset="1.0" />
+                </gradient>
+            </aapt:attr>
+        </path>
+        <!-- Pen Gold Clip -->
+        <path
+            android:fillColor="#FEF08A"
+            android:pathData="M76,42 h2 v14 h-2 z" />
+        <!-- Pen Nib Cone -->
+        <path
+            android:fillColor="#FCD34D"
+            android:pathData="M74,70 L78,80 L82,70 z" />
+        <!-- Nib Tip -->
+        <path
+            android:fillColor="#0F172A"
+            android:pathData="M77.5,77 L78,81 L78.5,77 z" />
+    </group>
+
+    <!-- Luxury Sparkle Highlight Top-Right -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.95"
+        android:pathData="M84,24 L86,18 L88,24 L94,26 L88,28 L86,34 L84,28 L78,26 Z" />
+    <path
+        android:fillColor="#FDE68A"
+        android:fillAlpha="0.8"
+        android:pathData="M22,66 L23,62 L24,66 L28,67 L24,68 L23,72 L22,68 L18,67 Z" />
+</vector>

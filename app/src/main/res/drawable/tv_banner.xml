@@ -1,45 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
     android:width="320dp"
     android:height="180dp"
     android:viewportWidth="320"
     android:viewportHeight="180">
-    <!-- Dark TV Canvas Background -->
-    <path
-        android:fillColor="#0B132B"
-        android:pathData="M0,0h320v180h-320z" />
 
-    <!-- Gradient Accent Strip -->
+    <!-- Luxury Midnight Sapphire TV Canvas Background -->
     <path
-        android:fillColor="#1C2541"
-        android:pathData="M0,130h320v50h-320z" />
+        android:pathData="M0,0h320v180h-320z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="0"
+                android:startY="0"
+                android:endX="320"
+                android:endY="180"
+                android:type="linear">
+                <item android:color="#0B0F19" android:offset="0.0" />
+                <item android:color="#171C2E" android:offset="0.5" />
+                <item android:color="#020617" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
 
-    <!-- Notes & Ledger Accent Glow -->
+    <!-- Golden Metallic Accent Top Trim -->
     <path
-        android:fillColor="#3A506B"
-        android:pathData="M0,0h320v8h-320z" />
+        android:pathData="M0,0h320v4h-320z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="0"
+                android:startY="0"
+                android:endX="320"
+                android:endY="0"
+                android:type="linear">
+                <item android:color="#F59E0B" android:offset="0.0" />
+                <item android:color="#FDE68A" android:offset="0.5" />
+                <item android:color="#D97706" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
 
-    <!-- Note Icon Symbol -->
+    <!-- Luxury Geometric Decorative Hexagon Background -->
     <path
-        android:fillColor="#48CAE4"
-        android:pathData="M70,50 h40 c4.4,0 8,3.6 8,8 v64 c0,4.4 -3.6,8 -8,8 h-40 c-4.4,0 -8,-3.6 -8,-8 v-64 c0,-4.4 3.6,-8 8,-8 z" />
-    <path
-        android:fillColor="#0B132B"
-        android:pathData="M76,68 h28 v4 h-28 z M76,82 h28 v4 h-28 z M76,96 h20 v4 h-20 z" />
+        android:strokeWidth="1"
+        android:strokeAlpha="0.15"
+        android:strokeColor="#F59E0B"
+        android:fillColor="#00000000"
+        android:pathData="M160,20 L240,65 L240,155 L160,200 L80,155 L80,65 Z" />
 
-    <!-- Expense Wallet Symbol -->
+    <!-- Ledger Leather Journal Icon (Center-Left) -->
     <path
-        android:fillColor="#52B788"
-        android:pathData="M130,60 h50 c5.5,0 10,4.5 10,10 v48 c0,5.5 -4.5,10 -10,10 h-50 c-5.5,0 -10,-4.5 -10,-10 v-48 c0,-5.5 4.5,-10 10,-10 z" />
+        android:fillColor="#1E293B"
+        android:pathData="M50,45 h46 c4,0 7,3 7,7 v76 c0,4 -3,7 -7,7 h-46 c-4,0 -7,-3 -7,-7 v-76 c0,-4 3,-7 7,-7 z" />
     <path
-        android:fillColor="#0B132B"
-        android:pathData="M170,80 h16 c2.2,0 4,1.8 4,4 v10 c0,2.2 -1.8,4 -4,4 h-16 c-2.2,0 -4,-1.8 -4,-4 v-10 c0,-2.2 1.8,-4 4,-4 z" />
-    <path
-        android:fillColor="#74C69D"
-        android:pathData="M176,87 a2,2 0 1,0 0.1,0 z" />
+        android:strokeWidth="1.5"
+        android:strokeColor="#F59E0B"
+        android:fillColor="#00000000"
+        android:pathData="M50,45 h46 c4,0 7,3 7,7 v76 c0,4 -3,7 -7,7 h-46 c-4,0 -7,-3 -7,-7 v-76 c0,-4 3,-7 7,-7 z" />
 
-    <!-- TV Label Typography Accent -->
+    <!-- Ledger Gold Spine & Ribbon -->
     <path
-        android:fillColor="#90E0EF"
-        android:pathData="M210,75 h60 v6 h-60 z M210,89 h45 v5 h-45 z M210,102 h30 v4 h-30 z" />
+        android:fillColor="#0F172A"
+        android:pathData="M50,45 h8 v90 h-8 c-4,0 -7,-3 -7,-7 v-76 c0,-4 3,-7 7,-7 z" />
+    <path
+        android:fillColor="#FBBF24"
+        android:pathData="M64,45 h8 v26 l-4,-3 l-4,3 z" />
+
+    <!-- Note & Ledger Lines -->
+    <path
+        android:fillColor="#FDE68A"
+        android:pathData="M76,58 h18 v3 h-18 z M76,66 h18 v3 h-18 z" />
+
+    <!-- Growth Finance Bars -->
+    <path
+        android:fillColor="#34D399"
+        android:pathData="M66,104 h5 v18 h-5 z" />
+    <path
+        android:fillColor="#38BDF8"
+        android:pathData="M74,96 h5 v26 h-5 z" />
+    <path
+        android:fillColor="#F59E0B"
+        android:pathData="M82,88 h5 v34 h-5 z" />
+    <path
+        android:fillColor="#10B981"
+        android:pathData="M90,80 h5 v42 h-5 z" />
+
+    <!-- Brand Typography & Subtitle Inlay (Right) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M125,65 h130 v8 h-130 z" />
+    <path
+        android:fillColor="#F59E0B"
+        android:pathData="M125,82 h90 v5 h-90 z" />
+    <path
+        android:fillColor="#94A3B8"
+        android:pathData="M125,95 h110 v4 h-110 z M125,105 h70 v4 h-70 z" />
 </vector>

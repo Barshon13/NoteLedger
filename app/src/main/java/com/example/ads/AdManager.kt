@@ -3,12 +3,15 @@ package com.example.ads
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.RequestConfiguration
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.gms.ads.rewarded.RewardedAd
@@ -32,6 +35,9 @@ object AdManager {
     private const val TAG = "AdManager"
 
     private val isMobileAdsInitialized = AtomicBoolean(false)
+    private var appContext: Context? = null
+    private val mainHandler = Handler(Looper.getMainLooper())
+
     private var interstitialAd: InterstitialAd? = null
     private var isInterstitialLoading = false
     private var rewardedAd: RewardedAd? = null
@@ -46,10 +52,20 @@ object AdManager {
     private val _activeConfig = MutableStateFlow(RemoteAdsConfig())
     val activeConfig: StateFlow<RemoteAdsConfig> = _activeConfig.asStateFlow()
 
+    private val _isInterstitialReady = MutableStateFlow(false)
+    val isInterstitialReady: StateFlow<Boolean> = _isInterstitialReady.asStateFlow()
+
     fun initialize(context: Context) {
+        appContext = context.applicationContext
         if (isMobileAdsInitialized.getAndSet(true)) return
 
         try {
+            // Configure Test Device ID for reliable loading in emulators and test environments
+            val requestConfig = RequestConfiguration.Builder()
+                .setTestDeviceIds(listOf(AdRequest.DEVICE_ID_EMULATOR))
+                .build()
+            MobileAds.setRequestConfiguration(requestConfig)
+
             MobileAds.initialize(context) { status ->
                 Log.d(TAG, "AdMob MobileAds initialized: $status")
                 _isInitialized.value = true
@@ -73,9 +89,20 @@ object AdManager {
         // If ad unit IDs changed, discard old loaded ad to ensure new ad unit is fetched
         if (oldConfig.interstitialAdUnitId != config.interstitialAdUnitId) {
             interstitialAd = null
+            _isInterstitialReady.value = false
         }
         if (oldConfig.rewardedAdUnitId != config.rewardedAdUnitId) {
             rewardedAd = null
+        }
+
+        // Proactively preload ads if enabled
+        appContext?.let { ctx ->
+            if (config.adsEnabled && config.interstitialAdEnabled && interstitialAd == null && !isInterstitialLoading) {
+                loadInterstitialAd(ctx)
+            }
+            if (config.adsEnabled && config.rewardedAdEnabled && rewardedAd == null && !isRewardedLoading) {
+                loadRewardedAd(ctx)
+            }
         }
     }
 
@@ -102,6 +129,7 @@ object AdManager {
                 override fun onAdLoaded(ad: InterstitialAd) {
                     interstitialAd = ad
                     isInterstitialLoading = false
+                    _isInterstitialReady.value = true
                     Log.d(TAG, "Interstitial ad loaded successfully and is ready.")
                 }
 
@@ -109,6 +137,16 @@ object AdManager {
                     Log.w(TAG, "Interstitial ad failed to load (code ${loadAdError.code}): ${loadAdError.message}")
                     interstitialAd = null
                     isInterstitialLoading = false
+                    _isInterstitialReady.value = false
+
+                    // Auto retry with delay
+                    mainHandler.postDelayed({
+                        appContext?.let { ctx ->
+                            if (currentConfig.adsEnabled && currentConfig.interstitialAdEnabled && interstitialAd == null) {
+                                loadInterstitialAd(ctx)
+                            }
+                        }
+                    }, 10000L)
                 }
             }
         )
@@ -126,6 +164,7 @@ object AdManager {
                 override fun onAdDismissedFullScreenContent() {
                     Log.d(TAG, "Interstitial ad dismissed by user.")
                     interstitialAd = null
+                    _isInterstitialReady.value = false
                     loadInterstitialAd(activity)
                     onAdClosed?.invoke()
                 }
@@ -133,6 +172,7 @@ object AdManager {
                 override fun onAdFailedToShowFullScreenContent(adError: AdError) {
                     Log.w(TAG, "Interstitial ad failed to show: ${adError.message}")
                     interstitialAd = null
+                    _isInterstitialReady.value = false
                     loadInterstitialAd(activity)
                     onAdClosed?.invoke()
                 }

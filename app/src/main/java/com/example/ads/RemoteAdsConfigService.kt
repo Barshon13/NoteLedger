@@ -26,8 +26,8 @@ object RemoteAdsConfigService {
     private const val KEY_CUSTOM_CONFIG_URL = "custom_config_url"
 
     // Default GitHub Raw config URL or fallback URL.
-    // Users can change this in settings or replace with their own repository/Gist raw URL.
-    const val DEFAULT_GITHUB_CONFIG_URL = "https://raw.githubusercontent.com/admob-configs/sample-config/main/ads_config.json"
+    // Points directly to the user's NoteLedger repository raw config on GitHub.
+    const val DEFAULT_GITHUB_CONFIG_URL = "https://raw.githubusercontent.com/Barshon13/NoteLedger/main/ads_config.json"
 
     private val moshi = Moshi.Builder()
         .addLast(KotlinJsonAdapterFactory())
