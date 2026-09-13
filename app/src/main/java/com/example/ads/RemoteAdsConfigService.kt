@@ -51,17 +51,38 @@ object RemoteAdsConfigService {
     fun initialize(context: Context, customUrl: String? = null) {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
-        // 1. Load cached JSON if available
+        // 1. Load cached JSON if available, but purge obsolete Unity configs
         val cachedJson = prefs.getString(KEY_CONFIG_JSON, null)
         if (!cachedJson.isNullOrBlank()) {
+            if (cachedJson.contains("\"ad_network\": \"unity\"") || cachedJson.contains("levelplay")) {
+                Log.d(TAG, "Purging obsolete Unity LevelPlay cache from SharedPreferences")
+                prefs.edit().remove(KEY_CONFIG_JSON).apply()
+            } else {
+                try {
+                    adapter.fromJson(cachedJson)?.let {
+                        _config.value = it
+                        AdManager.updateConfig(it)
+                        Log.d(TAG, "Loaded cached RemoteAdsConfig: $it")
+                    }
+                } catch (e: Exception) {
+                    Log.w(TAG, "Failed to parse cached RemoteAdsConfig", e)
+                }
+            }
+        }
+
+        // 2. Load bundled assets/ads_config.json if cache is not set
+        if (_config.value.adNetwork != "admob" || prefs.getString(KEY_CONFIG_JSON, null) == null) {
             try {
-                adapter.fromJson(cachedJson)?.let {
-                    _config.value = it
-                    AdManager.updateConfig(it)
-                    Log.d(TAG, "Loaded cached RemoteAdsConfig: $it")
+                context.assets.open("ads_config.json").bufferedReader().use { reader ->
+                    val assetJson = reader.readText()
+                    adapter.fromJson(assetJson)?.let {
+                        _config.value = it
+                        AdManager.updateConfig(it)
+                        Log.d(TAG, "Loaded bundled asset RemoteAdsConfig: $it")
+                    }
                 }
             } catch (e: Exception) {
-                Log.w(TAG, "Failed to parse cached RemoteAdsConfig", e)
+                Log.w(TAG, "No bundled ads_config.json found or failed to parse: ${e.message}")
             }
         }
 

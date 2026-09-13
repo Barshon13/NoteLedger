@@ -195,8 +195,14 @@ fun MainApp(
     // Handle System Back Button
     BackHandler(enabled = editingNote != null || showSettings) {
         if (editingNote != null) {
-            viewModel.closeNoteEditor()
-            AdManager.tryShowInterstitial(context, force = false)
+            val act = AdManager.findActivity(context)
+            if (act != null) {
+                AdManager.showInterstitialAd(act) {
+                    viewModel.closeNoteEditor()
+                }
+            } else {
+                viewModel.closeNoteEditor()
+            }
         } else if (showSettings) {
             viewModel.closeSettings()
         }
@@ -221,7 +227,14 @@ fun MainApp(
                 }
             },
             onBackClick = {
-                viewModel.closeNoteEditor()
+                val act = AdManager.findActivity(context)
+                if (act != null) {
+                    AdManager.showInterstitialAd(act) {
+                        viewModel.closeNoteEditor()
+                    }
+                } else {
+                    viewModel.closeNoteEditor()
+                }
             },
             onDeleteNote = { note ->
                 val act = AdManager.findActivity(context)
@@ -435,7 +448,16 @@ fun MainApp(
                                     editingRecurring = recurring
                                     showRecurringDialog = true
                                 },
-                                onDeleteRecurringClick = viewModel::deleteRecurringExpense,
+                                onDeleteRecurringClick = { recurring ->
+                                    val act = AdManager.findActivity(context)
+                                    if (act != null) {
+                                        AdManager.showInterstitialAd(act) {
+                                            viewModel.deleteRecurringExpense(recurring)
+                                        }
+                                    } else {
+                                        viewModel.deleteRecurringExpense(recurring)
+                                    }
+                                },
                                 onToggleRecurringActive = viewModel::toggleRecurringExpenseActive,
                                 onLogRecurringAsPaid = viewModel::logRecurringExpenseAsPaid,
                                 onAddDebtClick = { amount, desc ->
@@ -451,7 +473,16 @@ fun MainApp(
                                     showDebtDialog = true
                                 },
                                 onToggleDebtSettled = viewModel::toggleDebtSettled,
-                                onDeleteDebtClick = viewModel::deleteDebtRecord
+                                onDeleteDebtClick = { debt ->
+                                    val act = AdManager.findActivity(context)
+                                    if (act != null) {
+                                        AdManager.showInterstitialAd(act) {
+                                            viewModel.deleteDebtRecord(debt)
+                                        }
+                                    } else {
+                                        viewModel.deleteDebtRecord(debt)
+                                    }
+                                }
                             )
                         }
                     }
@@ -484,8 +515,14 @@ fun MainApp(
                 currentBudget = currentBudget,
                 selectedDate = selectedDate,
                 onSave = { total, food, transport, shopping, bills, other ->
-                    viewModel.saveMonthlyBudget(total, food, transport, shopping, bills, other)
-                    AdManager.tryShowInterstitial(context, force = false)
+                    val act = AdManager.findActivity(context)
+                    if (act != null) {
+                        AdManager.showInterstitialAd(act) {
+                            viewModel.saveMonthlyBudget(total, food, transport, shopping, bills, other)
+                        }
+                    } else {
+                        viewModel.saveMonthlyBudget(total, food, transport, shopping, bills, other)
+                    }
                 },
                 onClear = viewModel::clearMonthlyBudget,
                 onDismiss = { showBudgetPlanner = false }
@@ -497,8 +534,14 @@ fun MainApp(
             RecurringExpenseDialog(
                 expenseToEdit = editingRecurring,
                 onSave = { title, amount, category, frequency, nextDueDate, isActive, note, existingId ->
-                    viewModel.saveRecurringExpense(title, amount, category, frequency, nextDueDate, isActive, note, existingId)
-                    AdManager.tryShowInterstitial(context, force = false)
+                    val act = AdManager.findActivity(context)
+                    if (act != null) {
+                        AdManager.showInterstitialAd(act) {
+                            viewModel.saveRecurringExpense(title, amount, category, frequency, nextDueDate, isActive, note, existingId)
+                        }
+                    } else {
+                        viewModel.saveRecurringExpense(title, amount, category, frequency, nextDueDate, isActive, note, existingId)
+                    }
                 },
                 onDismiss = {
                     showRecurringDialog = false
@@ -514,8 +557,14 @@ fun MainApp(
                 initialAmount = initialDebtAmount,
                 initialDescription = initialDebtDesc,
                 onSave = { personName, amount, description, isOwedToMe, date, existingId ->
-                    viewModel.saveDebtRecord(personName, amount, description, isOwedToMe, date, existingId)
-                    AdManager.tryShowInterstitial(context, force = false)
+                    val act = AdManager.findActivity(context)
+                    if (act != null) {
+                        AdManager.showInterstitialAd(act) {
+                            viewModel.saveDebtRecord(personName, amount, description, isOwedToMe, date, existingId)
+                        }
+                    } else {
+                        viewModel.saveDebtRecord(personName, amount, description, isOwedToMe, date, existingId)
+                    }
                 },
                 onDismiss = {
                     showDebtDialog = false

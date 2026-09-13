@@ -3,6 +3,8 @@ package com.example.ads
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
@@ -14,13 +16,14 @@ import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * AdManager provides a singleton bridge for Google Mobile Ads (AdMob).
  *
- * Pre-loads interstitial ads using applicationContext to prevent memory leaks,
- * and guarantees that onAdDismissed fallback is always called so user workflows
- * are never blocked even when ads are loading or unavailable.
+ * Ensures interstitial ads are preloaded immediately, auto-reloaded upon dismissal or failure,
+ * and if an interstitial is requested while still loading, it waits briefly (up to timeout)
+ * so users actually see the ad when adding/deleting items, while never permanently blocking actions.
  */
 object AdManager {
     private const val TAG = "AdManager"
@@ -37,12 +40,18 @@ object AdManager {
     private var interstitialAd: InterstitialAd? = null
     private var isInterstitialLoading: Boolean = false
 
+    private val mainHandler = Handler(Looper.getMainLooper())
+
     /**
      * Initializes Google Mobile Ads SDK.
      */
     fun initialize(context: Context) {
-        if (_isInitialized.value) return
         appContext = context.applicationContext
+
+        if (_isInitialized.value) {
+            loadInterstitialAd()
+            return
+        }
 
         Log.d(TAG, "Initializing Google Mobile Ads (AdMob)...")
         MobileAds.initialize(context.applicationContext) { status ->
@@ -57,9 +66,11 @@ object AdManager {
      */
     fun updateConfig(newConfig: RemoteAdsConfig) {
         currentConfig = newConfig
-        Log.d(TAG, "Remote config updated: adsEnabled=${newConfig.adsEnabled}, interstitial=${newConfig.effectiveInterstitialAdUnitId}")
-        if (newConfig.adsEnabled && newConfig.interstitialAdEnabled && interstitialAd == null && !isInterstitialLoading) {
-            loadInterstitialAd()
+        Log.d(TAG, "Config updated: adsEnabled=${newConfig.adsEnabled}, interstitial=${newConfig.effectiveInterstitialAdUnitId}")
+        if (newConfig.adsEnabled && newConfig.interstitialAdEnabled) {
+            if (interstitialAd == null && !isInterstitialLoading) {
+                loadInterstitialAd()
+            }
         }
     }
 
@@ -83,72 +94,118 @@ object AdManager {
         val adUnitId = currentConfig.effectiveInterstitialAdUnitId
         Log.d(TAG, "Pre-loading AdMob Interstitial Ad with unitId: $adUnitId")
 
-        InterstitialAd.load(
-            ctx,
-            adUnitId,
-            adRequest,
-            object : InterstitialAdLoadCallback() {
-                override fun onAdLoaded(ad: InterstitialAd) {
-                    Log.d(TAG, "AdMob Interstitial loaded successfully.")
-                    interstitialAd = ad
-                    isInterstitialLoading = false
-                    _isInterstitialReady.value = true
-                }
+        mainHandler.post {
+            InterstitialAd.load(
+                ctx,
+                adUnitId,
+                adRequest,
+                object : InterstitialAdLoadCallback() {
+                    override fun onAdLoaded(ad: InterstitialAd) {
+                        Log.d(TAG, "AdMob Interstitial loaded successfully.")
+                        interstitialAd = ad
+                        isInterstitialLoading = false
+                        _isInterstitialReady.value = true
+                    }
 
-                override fun onAdFailedToLoad(loadAdError: LoadAdError) {
-                    Log.w(TAG, "AdMob Interstitial failed to load: ${loadAdError.message} (Code: ${loadAdError.code})")
-                    interstitialAd = null
-                    isInterstitialLoading = false
-                    _isInterstitialReady.value = false
+                    override fun onAdFailedToLoad(loadAdError: LoadAdError) {
+                        Log.w(TAG, "AdMob Interstitial failed to load: ${loadAdError.message} (Code: ${loadAdError.code})")
+                        interstitialAd = null
+                        isInterstitialLoading = false
+                        _isInterstitialReady.value = false
+                        // Retry after short delay
+                        mainHandler.postDelayed({ loadInterstitialAd() }, 4000)
+                    }
                 }
-            }
-        )
+            )
+        }
     }
 
     /**
      * Displays the interstitial ad on the specified Activity.
-     * Guarantees [onAdDismissed] will be executed either after ad completion
-     * or immediately if the ad is not ready / fails to display.
-     * Automatically requests and pre-loads the next interstitial after display.
+     * If the ad is already loaded, shows it immediately.
+     * If it is currently loading, waits up to 1.8 seconds for it to finish loading
+     * before falling back, ensuring ads show reliably on add/delete actions.
+     * Guarantees [onAdDismissed] will be executed exactly once.
      */
     fun showInterstitialAd(activity: Activity, onAdDismissed: () -> Unit) {
+        val hasInvokedCallback = AtomicBoolean(false)
+        fun safeDismiss() {
+            if (hasInvokedCallback.compareAndSet(false, true)) {
+                mainHandler.post { onAdDismissed() }
+            }
+        }
+
         if (!currentConfig.adsEnabled || !currentConfig.interstitialAdEnabled) {
-            Log.d(TAG, "Ads or Interstitial disabled in config. Proceeding immediately.")
-            onAdDismissed()
+            Log.d(TAG, "Ads or Interstitial disabled in config. Proceeding.")
+            safeDismiss()
             return
         }
 
         val ad = interstitialAd
         if (ad != null) {
-            Log.d(TAG, "Showing AdMob Interstitial ad...")
-            ad.fullScreenContentCallback = object : FullScreenContentCallback() {
-                override fun onAdDismissedFullScreenContent() {
-                    Log.d(TAG, "AdMob Interstitial dismissed.")
-                    interstitialAd = null
-                    _isInterstitialReady.value = false
-                    loadInterstitialAd()
-                    onAdDismissed()
-                }
+            showLoadedAd(activity, ad, ::safeDismiss)
+            return
+        }
 
-                override fun onAdFailedToShowFullScreenContent(adError: AdError) {
-                    Log.w(TAG, "AdMob Interstitial failed to show: ${adError.message}")
-                    interstitialAd = null
-                    _isInterstitialReady.value = false
-                    loadInterstitialAd()
-                    onAdDismissed()
-                }
-
-                override fun onAdShowedFullScreenContent() {
-                    Log.d(TAG, "AdMob Interstitial showed full screen.")
-                    interstitialAd = null
-                    _isInterstitialReady.value = false
+        // If not loaded but currently loading, wait up to 1.8s for it to finish loading
+        if (isInterstitialLoading) {
+            Log.d(TAG, "Interstitial is currently loading, waiting briefly before dismissing...")
+            var checksRemaining = 9 // 9 * 200ms = 1.8s
+            fun checkAd() {
+                val currentAd = interstitialAd
+                if (currentAd != null && !activity.isFinishing && !activity.isDestroyed) {
+                    showLoadedAd(activity, currentAd, ::safeDismiss)
+                } else if (checksRemaining > 0 && isInterstitialLoading && !hasInvokedCallback.get()) {
+                    checksRemaining--
+                    mainHandler.postDelayed(::checkAd, 200)
+                } else {
+                    Log.d(TAG, "Wait timed out or load finished without ad. Proceeding.")
+                    safeDismiss()
                 }
             }
-            ad.show(activity)
-        } else {
-            Log.d(TAG, "Interstitial ad not ready. Invoking callback immediately and requesting pre-load.")
-            loadInterstitialAd()
-            onAdDismissed()
+            mainHandler.postDelayed(::checkAd, 200)
+            return
+        }
+
+        // Neither loaded nor loading, trigger load and proceed
+        Log.d(TAG, "Interstitial ad not ready and not loading. Triggering load.")
+        loadInterstitialAd()
+        safeDismiss()
+    }
+
+    private fun showLoadedAd(activity: Activity, ad: InterstitialAd, onDismissed: () -> Unit) {
+        interstitialAd = null
+        _isInterstitialReady.value = false
+
+        ad.fullScreenContentCallback = object : FullScreenContentCallback() {
+            override fun onAdDismissedFullScreenContent() {
+                Log.d(TAG, "AdMob Interstitial dismissed.")
+                loadInterstitialAd()
+                onDismissed()
+            }
+
+            override fun onAdFailedToShowFullScreenContent(adError: AdError) {
+                Log.w(TAG, "AdMob Interstitial failed to show: ${adError.message}")
+                loadInterstitialAd()
+                onDismissed()
+            }
+
+            override fun onAdShowedFullScreenContent() {
+                Log.d(TAG, "AdMob Interstitial showed full screen.")
+            }
+        }
+
+        mainHandler.post {
+            try {
+                if (!activity.isFinishing && !activity.isDestroyed) {
+                    ad.show(activity)
+                } else {
+                    onDismissed()
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error displaying interstitial ad: ${e.message}", e)
+                onDismissed()
+            }
         }
     }
 

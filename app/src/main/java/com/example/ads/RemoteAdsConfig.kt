@@ -29,9 +29,25 @@ data class RemoteAdsConfig(
     @Json(name = "interstitial_interval_clicks")
     val interstitialIntervalClicks: Int = 1
 ) {
+    // If the unit ID was cached from the older Unity LevelPlay format (not starting with "ca-app-pub-"),
+    // sanitize it by falling back to the official AdMob Test Ad Unit ID.
     val effectiveBannerAdUnitId: String
-        get() = bannerAdUnitId.takeIf { it.isNotBlank() } ?: AdConstants.DEFAULT_BANNER_AD_UNIT_ID
+        get() {
+            val id = bannerAdUnitId.trim()
+            return if (id.startsWith("ca-app-pub-") || id.startsWith("/6499/")) {
+                id
+            } else {
+                AdConstants.DEFAULT_BANNER_AD_UNIT_ID
+            }
+        }
 
     val effectiveInterstitialAdUnitId: String
-        get() = interstitialAdUnitId.takeIf { it.isNotBlank() } ?: AdConstants.DEFAULT_INTERSTITIAL_AD_UNIT_ID
+        get() {
+            val id = interstitialAdUnitId.trim()
+            return if (id.startsWith("ca-app-pub-") || id.startsWith("/6499/")) {
+                id
+            } else {
+                AdConstants.DEFAULT_INTERSTITIAL_AD_UNIT_ID
+            }
+        }
 }
