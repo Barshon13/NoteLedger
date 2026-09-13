@@ -1,0 +1,23 @@
+{
+  "ads_enabled": true,
+  "show_ads": true,
+  "ad_network": "unity",
+  "app_key": "2019978b5",
+  "levelplay_app_key": "2019978b5",
+  "unity_game_id": "800372740",
+  "banner_ad_enabled": true,
+  "interstitial_ad_enabled": true,
+  "rewarded_ad_enabled": false,
+  "banner_ad_unit_id": "ozha41e0bblh91w7",
+  "levelplay_banner_ad_unit_id": "ozha41e0bblh91w7",
+  "interstitial_ad_unit_id": "7dtbooweswt7j13x",
+  "levelplay_interstitial_ad_unit_id": "7dtbooweswt7j13x",
+  "rewarded_ad_unit_id": "n9dt2c9fe24hw64rf",
+  "levelplay_rewarded_ad_unit_id": "n9dt2c9fe24hw64rf",
+  "banner_placement": "BP_Banner_Android",
+  "interstitial_placement": "BP_Interstitial_Android",
+  "rewarded_placement": "BP_Rewarded_Android",
+  "interstitial_interval_clicks": 3,
+  "interstitial_interval_actions": 3,
+  "use_test_ads": false
+}
