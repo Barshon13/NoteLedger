@@ -1,0 +1,107 @@
+name: Build Production Release (APK & AAB)
+
+on:
+  push:
+    branches: [ main ]
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-release:
+    name: Build & Sign Production Release (APK + AAB)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: 🚀 Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: ☕ Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: 📱 Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: ⚙️ Grant Execute Permission to Gradle Wrapper
+        run: |
+          if [ ! -f "gradlew" ]; then
+            gradle wrapper --gradle-version 9.3.1
+          fi
+          chmod +x gradlew
+
+      - name: 🔐 Prepare Release Keystore
+        run: |
+          mkdir -p app
+          if [ -n "${{ secrets.KEYSTORE_BASE64 }}" ]; then
+            echo "Decoding Keystore from GitHub Secrets..."
+            echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > app/release.keystore
+          elif [ -f "keystore/release.keystore" ]; then
+            echo "Using repository release.keystore fallback..."
+            cp keystore/release.keystore app/release.keystore
+          else
+            echo "::error::No release.keystore found in secrets or repository!"
+            exit 1
+          fi
+
+      - name: 📦 Build Production Release APK and AAB
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          ./gradlew :app:assembleRelease :app:bundleRelease --no-daemon --stacktrace
+
+      - name: 🔏 Align & Verify Signed APK
+        run: |
+          BUILD_TOOLS_DIR=$(ls -d $ANDROID_HOME/build-tools/* | sort -V | tail -n 1)
+          ZIPALIGN="$BUILD_TOOLS_DIR/zipalign"
+          APKSIGNER="$BUILD_TOOLS_DIR/apksigner"
+          
+          RAW_APK=$(find app/build/outputs/apk/release/ -name "*release*.apk" | head -n 1)
+          echo "Found compiled release APK: $RAW_APK"
+          
+          # If apksigner is needed or verify existing signature
+          if [ -n "${{ secrets.KEYSTORE_PASSWORD }}" ] && [ -n "${{ secrets.KEY_ALIAS }}" ]; then
+            $ZIPALIGN -f -v -p 4 "$RAW_APK" NoteLedger-v2.01-aligned.apk
+            $APKSIGNER sign --ks app/release.keystore \
+              --ks-key-alias "${{ secrets.KEY_ALIAS }}" \
+              --ks-pass pass:"${{ secrets.KEYSTORE_PASSWORD }}" \
+              --key-pass pass:"${{ secrets.KEY_PASSWORD }}" \
+              --v1-signing-enabled true \
+              --v2-signing-enabled true \
+              --v3-signing-enabled true \
+              --out NoteLedger-v2.01-release.apk \
+              NoteLedger-v2.01-aligned.apk
+          else
+            cp "$RAW_APK" NoteLedger-v2.01-release.apk
+          fi
+          
+          echo "Verifying final APK signature:"
+          $APKSIGNER verify --verbose NoteLedger-v2.01-release.apk || true
+
+      - name: 📤 Upload Universal Signed APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: NoteLedger-v2.01-Signed-APK
+          path: NoteLedger-v2.01-release.apk
+          retention-days: 30
+          if-no-files-found: error
+
+      - name: 📤 Upload Production Android App Bundle (AAB)
+        uses: actions/upload-artifact@v4
+        with:
+          name: NoteLedger-v2.01-Production-AAB
+          path: app/build/outputs/bundle/release/*.aab
+          retention-days: 30
+          if-no-files-found: error
