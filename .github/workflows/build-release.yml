@@ -24,14 +24,15 @@ jobs:
           fetch-depth: 0
 
       - name: ☕ Set up JDK 17
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
           cache: 'gradle'
 
-      - name: 📱 Set up Android SDK
-        uses: android-actions/setup-android@v3
+      - name: 📱 Accept Android SDK Licenses
+        run: |
+          yes | sdkmanager --licenses || true
 
       - name: ⚙️ Grant Execute Permission to Gradle Wrapper
         run: |
@@ -67,11 +68,10 @@ jobs:
           BUILD_TOOLS_DIR=$(ls -d $ANDROID_HOME/build-tools/* | sort -V | tail -n 1)
           ZIPALIGN="$BUILD_TOOLS_DIR/zipalign"
           APKSIGNER="$BUILD_TOOLS_DIR/apksigner"
-          
+
           RAW_APK=$(find app/build/outputs/apk/release/ -name "*release*.apk" | head -n 1)
           echo "Found compiled release APK: $RAW_APK"
-          
-          # If apksigner is needed or verify existing signature
+
           if [ -n "${{ secrets.KEYSTORE_PASSWORD }}" ] && [ -n "${{ secrets.KEY_ALIAS }}" ]; then
             $ZIPALIGN -f -v -p 4 "$RAW_APK" NoteLedger-v2.01-aligned.apk
             $APKSIGNER sign --ks app/release.keystore \
@@ -86,7 +86,7 @@ jobs:
           else
             cp "$RAW_APK" NoteLedger-v2.01-release.apk
           fi
-          
+
           echo "Verifying final APK signature:"
           $APKSIGNER verify --verbose NoteLedger-v2.01-release.apk || true
 
