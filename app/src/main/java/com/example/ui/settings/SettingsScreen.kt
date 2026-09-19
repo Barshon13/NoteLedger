@@ -523,7 +523,7 @@ fun SettingsScreen(
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "Version 2.00 • Purely Client-Side Offline Architecture",
+                        text = "Version 2.01 • Purely Client-Side Offline Architecture",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
