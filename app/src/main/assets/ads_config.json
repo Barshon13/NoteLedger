@@ -1,0 +1,13 @@
+{
+  "ads_enabled": true,
+  "show_ads": true,
+  "ad_network": "admob",
+  "app_id": "ca-app-pub-3940256099942544~3347511713",
+  "banner_ad_enabled": true,
+  "interstitial_ad_enabled": true,
+  "banner_ad_unit_id": "ca-app-pub-3940256099942544/6300978111",
+  "interstitial_ad_unit_id": "ca-app-pub-3940256099942544/1033173712",
+  "interstitial_interval_clicks": 1,
+  "interstitial_interval_actions": 1,
+  "use_test_ads": true
+}

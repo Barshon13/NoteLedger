@@ -1,0 +1,1052 @@
+package com.example.ui.settings
+
+import android.app.Activity
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material.icons.filled.CleaningServices
+import androidx.compose.material.icons.filled.CloudOff
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.DeleteForever
+import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Policy
+import androidx.compose.material.icons.filled.ReceiptLong
+import androidx.compose.material.icons.filled.Security
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.Storage
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.VerifiedUser
+import android.os.Build
+import androidx.compose.material.icons.filled.BrightnessAuto
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
+import com.example.ui.theme.ThemeMode
+import com.example.ui.theme.ThemePalette
+import com.example.ui.components.PaletteCardItem
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.ui.util.DateTimeUtils
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SettingsScreen(
+    notesCount: Int,
+    expensesCount: Int,
+    allTimeTotal: Double,
+    onBackClick: () -> Unit,
+    onClearAllData: () -> Unit,
+    themeMode: ThemeMode = ThemeMode.SYSTEM,
+    themePalette: ThemePalette = ThemePalette.SAGE_FOREST,
+    dynamicColor: Boolean = false,
+    onThemeModeChange: (ThemeMode) -> Unit = {},
+    onThemePaletteChange: (ThemePalette) -> Unit = {},
+    onDynamicColorChange: (Boolean) -> Unit = {},
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
+    var showFirstClearDialog by remember { mutableStateOf(false) }
+    var showSecondClearDialog by remember { mutableStateOf(false) }
+    var showDrmDetailsDialog by remember { mutableStateOf(false) }
+    var showActivateKeyDialog by remember { mutableStateOf(false) }
+    var showPrivacyPolicyDialog by remember { mutableStateOf(false) }
+    var showCopyrightDialog by remember { mutableStateOf(false) }
+    var inputLicenseKey by remember { mutableStateOf("") }
+    var statusMessage by remember { mutableStateOf<String?>(null) }
+
+    val drmLicense by com.example.drm.DrmLicenseManager.licenseState.collectAsStateWithLifecycle()
+
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Settings & Data Control",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = onBackClick,
+                        modifier = Modifier.testTag("settings_back_button")
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                )
+            )
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            // Privacy & Offline Promise Banner
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("privacy_banner_card"),
+                shape = RoundedCornerShape(18.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer
+                ),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Surface(
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.background,
+                        modifier = Modifier.size(44.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.CloudOff,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier
+                                .padding(10.dp)
+                                .size(24.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(14.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "100% Offline & Private",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = "All notes and expenses are stored strictly on your device in a local SQLite database. No accounts, no clouds, and zero tracking.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+
+            // Stats Card
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = "Local Storage Overview",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        StatItem(
+                            title = "Notes",
+                            value = notesCount.toString(),
+                            icon = Icons.Default.Storage
+                        )
+                        StatItem(
+                            title = "Expenses",
+                            value = expensesCount.toString(),
+                            icon = Icons.Default.ReceiptLong
+                        )
+                        StatItem(
+                            title = "Total Spent",
+                            value = DateTimeUtils.formatCurrency(allTimeTotal),
+                            icon = Icons.Default.VerifiedUser
+                        )
+                    }
+                }
+            }
+
+            // Appearance & Theme Section
+            Text(
+                text = "APPEARANCE & THEME",
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("theme_settings_card"),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Surface(
+                            shape = CircleShape,
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            modifier = Modifier.size(40.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Palette,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                                modifier = Modifier
+                                    .padding(8.dp)
+                                    .size(24.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "Theme Mode",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = "Choose between light, dark, or system matching theme",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    // Theme Mode Selector Pills
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        ThemeOptionPill(
+                            label = "System",
+                            icon = Icons.Default.BrightnessAuto,
+                            isSelected = themeMode == ThemeMode.SYSTEM,
+                            onClick = { onThemeModeChange(ThemeMode.SYSTEM) },
+                            modifier = Modifier
+                                .weight(1f)
+                                .testTag("theme_pill_system")
+                        )
+                        ThemeOptionPill(
+                            label = "Light",
+                            icon = Icons.Default.LightMode,
+                            isSelected = themeMode == ThemeMode.LIGHT,
+                            onClick = { onThemeModeChange(ThemeMode.LIGHT) },
+                            modifier = Modifier
+                                .weight(1f)
+                                .testTag("theme_pill_light")
+                        )
+                        ThemeOptionPill(
+                            label = "Dark",
+                            icon = Icons.Default.DarkMode,
+                            isSelected = themeMode == ThemeMode.DARK,
+                            onClick = { onThemeModeChange(ThemeMode.DARK) },
+                            modifier = Modifier
+                                .weight(1f)
+                                .testTag("theme_pill_dark")
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(18.dp))
+
+                    Text(
+                        text = "Color Palette",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = "Select a handcrafted Material 3 color harmony",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(2),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(290.dp),
+                        contentPadding = PaddingValues(2.dp)
+                    ) {
+                        items(ThemePalette.values()) { palette ->
+                            val isSelected = themePalette == palette && !dynamicColor
+
+                            PaletteCardItem(
+                                palette = palette,
+                                isSelected = isSelected,
+                                onClick = {
+                                    if (dynamicColor) {
+                                        onDynamicColorChange(false)
+                                    }
+                                    onThemePaletteChange(palette)
+                                }
+                            )
+                        }
+                    }
+
+                    // Dynamic Wallpaper Colors (Android 12+)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        HorizontalDivider(
+                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = "Dynamic Accent Colors",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                                Text(
+                                    text = "Sample colors dynamically from your device wallpaper (Material You)",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Switch(
+                                checked = dynamicColor,
+                                onCheckedChange = onDynamicColorChange,
+                                modifier = Modifier.testTag("dynamic_color_switch"),
+                                colors = SwitchDefaults.colors(
+                                    checkedThumbColor = MaterialTheme.colorScheme.primary,
+                                    checkedTrackColor = MaterialTheme.colorScheme.primaryContainer
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+
+            // Danger Zone Section
+            Text(
+                text = "DANGER ZONE",
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.error
+            )
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.25f)
+                ),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.25f)),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+            ) {
+                SettingsActionItem(
+                    icon = Icons.Default.DeleteForever,
+                    iconTint = MaterialTheme.colorScheme.error,
+                    title = "Clear All Data",
+                    subtitle = "Permanently erase all notes and expenses from this device",
+                    onClick = { showFirstClearDialog = true },
+                    tag = "clear_all_data_button"
+                )
+            }
+
+            // Legal, Privacy & Copyright Section
+            Text(
+                text = "LEGAL & PRIVACY",
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("privacy_copyright_card"),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+            ) {
+                Column {
+                    SettingsActionItem(
+                        icon = Icons.Default.Policy,
+                        title = "Privacy Policy",
+                        subtitle = "Offline-first data protection & privacy guidelines",
+                        onClick = { showPrivacyPolicyDialog = true },
+                        tag = "privacy_policy_item"
+                    )
+
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
+
+                    SettingsActionItem(
+                        icon = Icons.Default.Security,
+                        title = "Ad Privacy & Consent Choices",
+                        subtitle = "Manage Google AdMob GDPR/CPRA consent settings",
+                        onClick = {
+                            val act = com.example.ads.AdManager.findActivity(context)
+                            if (act != null) {
+                                com.example.ads.AdManager.showPrivacyOptionsForm(act) {
+                                    Toast.makeText(context, "Consent choices updated", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        },
+                        tag = "ad_privacy_consent_item"
+                    )
+
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
+
+                    SettingsActionItem(
+                        icon = Icons.Default.Info,
+                        title = "Copyright & License Notice",
+                        subtitle = "Copyright © 2026 Barshon Hossain. All Rights Reserved.",
+                        onClick = { showCopyrightDialog = true },
+                        tag = "copyright_notice_item"
+                    )
+                }
+            }
+
+            // About Section
+            Text(
+                text = "ABOUT",
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = "NoteLedger",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Version 2.00 • Purely Client-Side Offline Architecture",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Designed for high privacy with zero telemetry, zero analytics, and local persistence.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Copyright © 2026 Barshon Hossain. All Rights Reserved.",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+        }
+    }
+
+    // Clear All Data Confirmation 1
+    if (showFirstClearDialog) {
+        AlertDialog(
+            onDismissRequest = { showFirstClearDialog = false },
+            icon = {
+                Icon(Icons.Default.DeleteForever, contentDescription = null, tint = MaterialTheme.colorScheme.error)
+            },
+            title = { Text("Clear All Data?") },
+            text = {
+                Text("Are you sure you want to delete all stored notes and expenses? This will wipe your local database.")
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showFirstClearDialog = false
+                        showSecondClearDialog = true
+                    },
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Text("Continue")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showFirstClearDialog = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+
+    // Clear All Data Double Confirmation 2
+    if (showSecondClearDialog) {
+        AlertDialog(
+            onDismissRequest = { showSecondClearDialog = false },
+            icon = {
+                Icon(Icons.Default.DeleteForever, contentDescription = null, tint = MaterialTheme.colorScheme.error)
+            },
+            title = { Text("Final Confirmation") },
+            text = {
+                Text("This action is completely IRREVERSIBLE. All $notesCount notes and $expensesCount expenses will be permanently destroyed. Are you absolutely certain?")
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showSecondClearDialog = false
+                        onClearAllData()
+                        statusMessage = "All data cleared."
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                    modifier = Modifier.testTag("confirm_clear_all_button")
+                ) {
+                    Text("Yes, Delete Everything")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showSecondClearDialog = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+
+    // DRM License Details Dialog
+    if (showDrmDetailsDialog) {
+        val info = drmLicense
+        AlertDialog(
+            onDismissRequest = { showDrmDetailsDialog = false },
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.Security,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            },
+            title = {
+                Text(
+                    text = "DRM & App License",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Column(
+                    modifier = Modifier.verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    if (info != null) {
+                        DrmInfoRow(label = "Status", value = info.status.displayName)
+                        DrmInfoRow(label = "License Token", value = info.licenseId)
+                        DrmInfoRow(label = "DRM Device ID", value = info.deviceDrmId)
+                        DrmInfoRow(label = "Protection Level", value = info.protectionLevel)
+                        DrmInfoRow(label = "Installer Source", value = info.installerSource)
+                        DrmInfoRow(label = "Validity", value = info.expiryDate)
+                        DrmInfoRow(label = "SHA-256 Seal", value = info.signatureHash)
+                    } else {
+                        Text("License verification is initializing...")
+                    }
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        com.example.drm.DrmLicenseManager.refreshLicense(context)
+                        statusMessage = "DRM License and Device Hardware Token successfully refreshed and verified."
+                        showDrmDetailsDialog = false
+                    }
+                ) {
+                    Text("Re-verify")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDrmDetailsDialog = false }) {
+                    Text("Close")
+                }
+            }
+        )
+    }
+
+    // Activate Custom DRM Key Dialog
+    if (showActivateKeyDialog) {
+        AlertDialog(
+            onDismissRequest = { showActivateKeyDialog = false },
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.Lock,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            },
+            title = {
+                Text("Activate DRM License Key")
+            },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        text = "Enter your enterprise or offline DRM product license key (e.g. DRM-XXXX-XXXX-XXXX):",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    OutlinedTextField(
+                        value = inputLicenseKey,
+                        onValueChange = { inputLicenseKey = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        placeholder = { Text("DRM-XXXX-XXXX-XXXX") },
+                        singleLine = true
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        if (inputLicenseKey.isNotBlank()) {
+                            val success = com.example.drm.DrmLicenseManager.activateCustomKey(context, inputLicenseKey)
+                            if (success) {
+                                statusMessage = "DRM License Key successfully activated and bound to this hardware device!"
+                                showActivateKeyDialog = false
+                                inputLicenseKey = ""
+                            } else {
+                                statusMessage = "Invalid DRM License Key format. Please check the code and try again."
+                            }
+                        }
+                    }
+                ) {
+                    Text("Activate")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showActivateKeyDialog = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+
+    // Privacy Policy Dialog
+    if (showPrivacyPolicyDialog) {
+        val privacyPolicyFullText = """
+            Privacy Policy for NoteLedger
+            Last Updated: 2026
+
+            1. Offline-First Privacy Architecture
+            NoteLedger operates purely client-side on your Android device. All notes, expense transactions, category budgets, and financial records are stored exclusively in your local on-device SQLite/Room database.
+
+            2. Zero Personal Data Collection
+            We do not collect, harvest, transmit, or share any Personally Identifiable Information (PII), such as your name, contacts, photos, or GPS location.
+
+            3. Local Sandboxed Storage
+            Your data is protected by the Android application sandbox. We do not maintain any cloud servers or external databases for your note or expense data.
+
+            4. Data Protection & Offline Utilities
+            All notes, exports (PDF/CSV/JSON), and data calculations are processed entirely on-device.
+
+            5. App Stability & Crash Diagnostics
+            To detect real-world crashes, ANRs, and device compatibility issues in distribution channels (such as the OPPO App Market and ColorOS ecosystem), standard anonymous diagnostic logs are collected via Firebase Crashlytics. Reports contain stack traces and hardware parameters only — never personal note text or financial records.
+
+            6. Developer & Contact
+            Developer: Barshon Hossain
+            Email: mohammadborshonhossain6@gmail.com
+            Copyright © 2026 Barshon Hossain. All Rights Reserved.
+        """.trimIndent()
+
+        AlertDialog(
+            onDismissRequest = { showPrivacyPolicyDialog = false },
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.Policy,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            },
+            title = {
+                Text(
+                    text = "Privacy Policy",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(340.dp)
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = privacyPolicyFullText,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                        val clip = ClipData.newPlainText("Privacy Policy", privacyPolicyFullText)
+                        clipboard.setPrimaryClip(clip)
+                        Toast.makeText(context, "Privacy Policy copied to clipboard!", Toast.LENGTH_SHORT).show()
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ContentCopy,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("Copy Policy")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showPrivacyPolicyDialog = false }) {
+                    Text("Close")
+                }
+            }
+        )
+    }
+
+    // Copyright Notice Dialog
+    if (showCopyrightDialog) {
+        AlertDialog(
+            onDismissRequest = { showCopyrightDialog = false },
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.Info,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            },
+            title = {
+                Text(
+                    text = "Copyright & IP Notice",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Column(
+                    modifier = Modifier.verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Text(
+                        text = "NoteLedger",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Text(
+                        text = "Copyright © 2026 Barshon Hossain.\nAll Rights Reserved.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f))
+                    Text(
+                        text = "All design layouts, visual components, database schemas, code architecture, and intellectual property in this application are protected under international copyright and intellectual property laws.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = "Unauthorized copying, decompilation, reproduction, or redistribution of this software or any portion thereof without explicit permission is strictly prohibited.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            },
+            confirmButton = {
+                Button(onClick = { showCopyrightDialog = false }) {
+                    Text("Understood")
+                }
+            }
+        )
+    }
+
+    // Status Message Dialog / Toast
+    statusMessage?.let { msg ->
+        AlertDialog(
+            onDismissRequest = { statusMessage = null },
+            title = { Text("Notice") },
+            text = { Text(msg) },
+            confirmButton = {
+                TextButton(onClick = { statusMessage = null }) {
+                    Text("OK")
+                }
+            }
+        )
+    }
+}
+
+@Composable
+fun StatItem(
+    title: String,
+    value: String,
+    icon: ImageVector,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(20.dp)
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = value,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        Text(
+            text = title,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+@Composable
+fun SettingsActionItem(
+    icon: ImageVector,
+    title: String,
+    subtitle: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    iconTint: androidx.compose.ui.graphics.Color? = null,
+    tag: String = ""
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .then(if (tag.isNotEmpty()) Modifier.testTag(tag) else Modifier)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Row(
+            modifier = Modifier.weight(1f),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = iconTint ?: MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(24.dp)
+            )
+            Spacer(modifier = Modifier.width(14.dp))
+            Column {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+            modifier = Modifier.size(14.dp)
+        )
+    }
+}
+
+@Composable
+fun DrmInfoRow(
+    label: String,
+    value: String,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.primary,
+            fontWeight = FontWeight.Bold
+        )
+        Spacer(modifier = Modifier.height(2.dp))
+        Text(
+            text = value,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+            fontWeight = FontWeight.Medium
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+    }
+}
+
+@Composable
+fun ThemeOptionPill(
+    label: String,
+    icon: ImageVector,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        onClick = onClick,
+        modifier = modifier.height(52.dp),
+        shape = RoundedCornerShape(12.dp),
+        color = if (isSelected) {
+            MaterialTheme.colorScheme.primaryContainer
+        } else {
+            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        },
+        border = BorderStroke(
+            width = if (isSelected) 1.5.dp else 1.dp,
+            color = if (isSelected) {
+                MaterialTheme.colorScheme.primary
+            } else {
+                MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+            }
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = if (isSelected) {
+                    MaterialTheme.colorScheme.onPrimaryContainer
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                },
+                modifier = Modifier.size(18.dp)
+            )
+            Spacer(modifier = Modifier.width(6.dp))
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                color = if (isSelected) {
+                    MaterialTheme.colorScheme.onPrimaryContainer
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                }
+            )
+        }
+    }
+}
+
+
