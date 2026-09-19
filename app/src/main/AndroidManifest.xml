@@ -26,6 +26,11 @@
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-3940256099942544~3347511713" />
 
+        <!-- Developer Website & app-ads.txt host -->
+        <meta-data
+            android:name="developer_website"
+            android:value="https://mobiledoctor12.blogspot.com" />
+
         <!-- Disable Android Privacy Sandbox measurement service binding to prevent ServiceUnavailableException on non-GMS devices and emulators -->
         <property
             android:name="android.adservices.AD_SERVICES_CONFIG"
