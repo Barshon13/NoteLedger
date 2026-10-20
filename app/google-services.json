@@ -1,0 +1,121 @@
+{
+  "project_info": {
+    "project_number": "298557398884",
+    "project_id": "gen-lang-client-0611932724",
+    "storage_bucket": "gen-lang-client-0611932724.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:298557398884:android:2142b85da96d6a9fcfa471",
+        "android_client_info": {
+          "package_name": "com.aistudio.agradoot.kxmpzq"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "298557398884-9bvjh6v7sf0rj60msea0lqmhn1hsvv6f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.aistudio.agradoot.kxmpzq",
+            "certificate_hash": "d87903b01d4bfc24ea2bf67847a64d3f57bdec78"
+          }
+        },
+        {
+          "client_id": "298557398884-0kigd4ja79t5sukjumpurp1q36il3kg4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDpy1zFTle3Iol29_o_uKG-60owya_Th8k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "298557398884-0kigd4ja79t5sukjumpurp1q36il3kg4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:298557398884:android:47684afe09630b49cfa471",
+        "android_client_info": {
+          "package_name": "com.aistudio.quizmaster.qmpapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "298557398884-2052p7m47muci2jlun7fa6noc10qgn6m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.aistudio.quizmaster.qmpapp",
+            "certificate_hash": "75556b0bf65729d22ab2298026b4313ccfeb861d"
+          }
+        },
+        {
+          "client_id": "298557398884-0kigd4ja79t5sukjumpurp1q36il3kg4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDpy1zFTle3Iol29_o_uKG-60owya_Th8k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "298557398884-0kigd4ja79t5sukjumpurp1q36il3kg4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:298557398884:android:9a0757f00e1f829ecfa471",
+        "android_client_info": {
+          "package_name": "com.barshon.noteledger"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "298557398884-r2qi1o12cr1kt7ca2ekg5sc80gaggcdd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.barshon.noteledger",
+            "certificate_hash": "35c8fd02849b044a6a6c9cdc9a66be1dabb0a926"
+          }
+        },
+        {
+          "client_id": "298557398884-0kigd4ja79t5sukjumpurp1q36il3kg4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDpy1zFTle3Iol29_o_uKG-60owya_Th8k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "298557398884-0kigd4ja79t5sukjumpurp1q36il3kg4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

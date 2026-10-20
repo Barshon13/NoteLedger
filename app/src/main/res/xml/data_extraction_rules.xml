@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-extraction-rules>
+    <cloud-backup>
+        <include domain="database" path="offline_tracker_database" />
+        <include domain="sharedpref" path="com.barshon.noteledger_preferences.xml" />
+    </cloud-backup>
+    <device-transfer>
+        <include domain="database" path="offline_tracker_database" />
+        <include domain="sharedpref" path="com.barshon.noteledger_preferences.xml" />
+    </device-transfer>
+</data-extraction-rules>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Notebook body with gradient effect -->
+    <path
+        android:pathData="M34,22h40a4,4 0 0,1 4,4v56a4,4 0 0,1 -4,4h-40a4,4 0 0,1 -4,-4v-56a4,4 0 0,1 4,-4z">
+        <fillColor>
+            <gradient
+                android:centerX="54"
+                android:centerY="54"
+                android:gradientRadius="40"
+                android:type="linear"
+                android:startX="30"
+                android:startY="20"
+                android:endX="78"
+                android:endY="86">
+                <item android:color="#FFD700" android:offset="0.0"/>
+                <item android:color="#FFA000" android:offset="1.0"/>
+            </gradient>
+        </fillColor>
+    </path>
+    <!-- Ledger Glyph -->
+    <path
+        android:fillColor="#051A12"
+        android:pathData="M42,40h24v4H42z M42,50h12v12H42z M58,50h8v12h-8z" />
+    <!-- Neon Emerald accent lines -->
+    <path
+        android:fillColor="#00E676"
+        android:pathData="M34,30h40v2H34z M34,75h40v2H34z" />
+</vector>

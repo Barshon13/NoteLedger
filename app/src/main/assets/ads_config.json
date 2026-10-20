@@ -1,0 +1,13 @@
+{
+  "ads_enabled": false,
+  "show_ads": false,
+  "ad_network": "none",
+  "app_id": "",
+  "banner_ad_enabled": false,
+  "interstitial_ad_enabled": false,
+  "banner_ad_unit_id": "",
+  "interstitial_ad_unit_id": "",
+  "interstitial_interval_clicks": 999999,
+  "interstitial_interval_actions": 999999,
+  "use_test_ads": false
+}

@@ -1,0 +1,8 @@
+{
+  "name": "NoteLedger",
+  "description": "Privacy-focused notes, daily expense tracking, and budget planner with local Room persistence, DRM licensing, and modern Material 3 mobile UI.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
