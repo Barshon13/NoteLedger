@@ -18,7 +18,11 @@ class BillingManager(context: Context, private val externalScope: CoroutineScope
     private val TAG = "BillingManager"
     private val billingClient = BillingClient.newBuilder(context)
         .setListener(this)
-        .enablePendingPurchases()
+        .enablePendingPurchases(
+            PendingPurchasesParams.newBuilder()
+                .enableOneTimeProducts()
+                .build()
+        )
         .build()
 
     private val _connectionState = MutableStateFlow(BillingConnectionState.DISCONNECTED)
@@ -83,9 +87,9 @@ class BillingManager(context: Context, private val externalScope: CoroutineScope
             .setProductList(productList)
             .build()
 
-        billingClient.queryProductDetailsAsync(params) { billingResult, productDetailsList ->
+        billingClient.queryProductDetailsAsync(params) { billingResult, queryProductDetailsResult ->
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                _productDetails.value = productDetailsList.associateBy { it.productId }
+                _productDetails.value = queryProductDetailsResult.productDetailsList.associateBy { it.productId }
             } else {
                 Log.e(TAG, "Query Product Details Error: ${billingResult.responseCode}")
             }

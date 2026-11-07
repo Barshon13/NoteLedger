@@ -18,8 +18,8 @@ android {
     applicationId = "com.barshon.noteledger"
     minSdk = 24
     targetSdk = 36
-    versionCode = 3
-    versionName = "2.01"
+    versionCode = 4
+    versionName = "2.02"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
@@ -45,6 +45,9 @@ android {
       isShrinkResources = true
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
       signingConfig = signingConfigs.getByName("release")
+      ndk {
+        debugSymbolLevel = "FULL"
+      }
     }
   }
   compileOptions {
