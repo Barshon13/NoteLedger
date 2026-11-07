@@ -73,7 +73,7 @@ jobs:
           echo "Found compiled release APK: $RAW_APK"
 
           if [ -n "${{ secrets.KEYSTORE_PASSWORD }}" ] && [ -n "${{ secrets.KEY_ALIAS }}" ]; then
-            $ZIPALIGN -f -v -p 4 "$RAW_APK" NoteLedger-v2.01-aligned.apk
+            $ZIPALIGN -f -v -p 4 "$RAW_APK" NoteLedger-v2.02-aligned.apk
             $APKSIGNER sign --ks app/release.keystore \
               --ks-key-alias "${{ secrets.KEY_ALIAS }}" \
               --ks-pass pass:"${{ secrets.KEYSTORE_PASSWORD }}" \
@@ -81,27 +81,27 @@ jobs:
               --v1-signing-enabled true \
               --v2-signing-enabled true \
               --v3-signing-enabled true \
-              --out NoteLedger-v2.01-release.apk \
-              NoteLedger-v2.01-aligned.apk
+              --out NoteLedger-v2.02-release.apk \
+              NoteLedger-v2.02-aligned.apk
           else
-            cp "$RAW_APK" NoteLedger-v2.01-release.apk
+            cp "$RAW_APK" NoteLedger-v2.02-release.apk
           fi
 
           echo "Verifying final APK signature:"
-          $APKSIGNER verify --verbose NoteLedger-v2.01-release.apk || true
+          $APKSIGNER verify --verbose NoteLedger-v2.02-release.apk || true
 
       - name: 📤 Upload Universal Signed APK
         uses: actions/upload-artifact@v4
         with:
-          name: NoteLedger-v2.01-Signed-APK
-          path: NoteLedger-v2.01-release.apk
+          name: NoteLedger-v2.02-Signed-APK
+          path: NoteLedger-v2.02-release.apk
           retention-days: 30
           if-no-files-found: error
 
       - name: 📤 Upload Production Android App Bundle (AAB)
         uses: actions/upload-artifact@v4
         with:
-          name: NoteLedger-v2.01-Production-AAB
+          name: NoteLedger-v2.02-Production-AAB
           path: app/build/outputs/bundle/release/*.aab
           retention-days: 30
           if-no-files-found: error
