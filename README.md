@@ -19,8 +19,8 @@ A privacy-focused offline notes and daily expense tracker built for Android. Thi
 
 ## Author, Website & Copyright
 **Developer:** Barshon Hossain  
-**Official Website:** [https://mobiledoctor12.blogspot.com](https://mobiledoctor12.blogspot.com)  
-**Online Privacy Policy:** [https://mobiledoctor12.blogspot.com](https://mobiledoctor12.blogspot.com)  
+**Official Website:** [https://barshon.me](https://barshon.me)  
+**Online Privacy Policy:** [https://sites.google.com/view/noteledger/home](https://sites.google.com/view/noteledger/home)  
 **Email:** mohammadborshonhossain6@gmail.com  
 **Copyright:** Copyright © 2026 Barshon Hossain. All Rights Reserved.
 

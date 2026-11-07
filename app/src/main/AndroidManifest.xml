@@ -26,7 +26,7 @@
         <!-- Developer Website & app-ads.txt host -->
         <meta-data
             android:name="developer_website"
-            android:value="https://mobiledoctor12.blogspot.com" />
+            android:value="https://barshon.me" />
 
         <!-- FileProvider for Sharing Exports and App Icon -->
         <provider

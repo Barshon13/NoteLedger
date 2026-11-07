@@ -87,5 +87,5 @@ If you have any questions, feedback, or concerns regarding this Privacy Policy o
 
 - **Developer:** Barshon Hossain
 - **Application:** NoteLedger (`com.barshon.noteledger`)
-- **Contact Email:** mohammadborshonhossain6@gmail.com
-- **Official Website:** [https://mobiledoctor12.blogspot.com](https://mobiledoctor12.blogspot.com)
+- **Official Website:** [https://barshon.me](https://barshon.me)
+- **Online Privacy Policy:** [https://sites.google.com/view/noteledger/home](https://sites.google.com/view/noteledger/home)

@@ -510,9 +510,9 @@ fun SettingsScreen(
                     SettingsActionItem(
                         icon = Icons.Default.Policy,
                         title = "Privacy Policy",
-                        subtitle = "https://mobiledoctor12.blogspot.com (Tap to open online)",
+                        subtitle = "https://sites.google.com/view/noteledger/home (Tap to open online)",
                         onClick = {
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://mobiledoctor12.blogspot.com"))
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://sites.google.com/view/noteledger/home"))
                             context.startActivity(intent)
                         },
                         tag = "privacy_policy_item"
@@ -523,9 +523,9 @@ fun SettingsScreen(
                     SettingsActionItem(
                         icon = Icons.Default.Language,
                         title = "Official Developer Website",
-                        subtitle = "https://mobiledoctor12.blogspot.com (Tap to visit)",
+                        subtitle = "https://barshon.me (Tap to visit)",
                         onClick = {
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://mobiledoctor12.blogspot.com"))
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://barshon.me"))
                             context.startActivity(intent)
                         },
                         tag = "developer_website_item"
@@ -596,9 +596,9 @@ fun SettingsScreen(
                     SettingsActionItem(
                         icon = Icons.Default.Policy,
                         title = "Privacy Policy",
-                        subtitle = "https://mobiledoctor12.blogspot.com (Tap to view online)",
+                        subtitle = "https://sites.google.com/view/noteledger/home (Tap to view online)",
                         onClick = {
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://mobiledoctor12.blogspot.com"))
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://sites.google.com/view/noteledger/home"))
                             context.startActivity(intent)
                         },
                         tag = "about_privacy_policy_item"
@@ -609,9 +609,9 @@ fun SettingsScreen(
                     SettingsActionItem(
                         icon = Icons.Default.Language,
                         title = "Developer Website",
-                        subtitle = "https://mobiledoctor12.blogspot.com (Tap to visit)",
+                        subtitle = "https://barshon.me (Tap to visit)",
                         onClick = {
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://mobiledoctor12.blogspot.com"))
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://barshon.me"))
                             context.startActivity(intent)
                         },
                         tag = "about_developer_website_item"
@@ -815,9 +815,9 @@ fun SettingsScreen(
     if (showPrivacyPolicyDialog) {
         val privacyPolicyFullText = """
             Privacy Policy for NoteLedger
-            Last Updated: October 2026
-            Official Website: https://mobiledoctor12.blogspot.com
-            Online Privacy Policy: https://mobiledoctor12.blogspot.com
+            Last Updated: November 2026
+            Official Website: https://barshon.me
+            Online Privacy Policy: https://sites.google.com/view/noteledger/home
 
             1. Offline-First Privacy Architecture
             NoteLedger operates purely client-side on your Android device. All notes, expense transactions, category budgets, debt ledgers, and financial records are stored exclusively in your local on-device SQLite/Room database.
@@ -825,18 +825,18 @@ fun SettingsScreen(
             2. Zero Personal Data Collection
             We do not collect, harvest, transmit, share, or monetize any Personally Identifiable Information (PII), such as your name, email, phone number, contacts, photos, or GPS location.
 
-            3. Advertising Status: STOPPED & DISABLED
-            All in-app advertisements (banners and interstitials) are completely stopped and disabled across NoteLedger. No ad requests are initiated, and zero advertising identifiers (AAID) or tracking cookies are collected or sent.
+            3. Advertisements (Google AdMob)
+            NoteLedger uses Google AdMob to display banner, interstitial, and rewarded video ads. Third-party ad networks may process pseudonymous device telemetry (such as your Android Advertising ID) to serve ads in compliance with Google Play Developer Policies.
 
-            4. Local Sandboxed Storage
-            Your data is protected by the Android application sandbox. We do not maintain any cloud servers or external databases for your note or financial data.
+            4. In-App Purchases (Google Play Billing)
+            Coin packs and quota top-ups are processed directly and securely through Google Play Billing. NoteLedger never accesses or stores your credit card or billing credentials.
 
-            5. Technical Diagnostics & Reliability
-            To detect unexpected crashes and device compatibility issues across Android releases, minimal anonymous diagnostic logs are collected via Firebase Crashlytics. Reports contain stack traces and hardware parameters only — never personal note text or financial records.
+            5. Optional Cloud Backup (Google Drive AppData)
+            If you choose to use Cloud Backup, an encrypted copy of your data is uploaded directly to your private Google Drive AppData folder. The developer has zero access to this data.
 
             6. Developer & Contact Information
             Developer: Barshon Hossain
-            Website: https://mobiledoctor12.blogspot.com
+            Website: https://barshon.me
             Email: mohammadborshonhossain6@gmail.com
             Copyright © 2026 Barshon Hossain. All Rights Reserved.
         """.trimIndent()
@@ -892,7 +892,7 @@ fun SettingsScreen(
                     }
                     Button(
                         onClick = {
-                            val intent = Intent(Intent.ACTION_VIEW, android.net.Uri.parse("https://mobiledoctor12.blogspot.com"))
+                            val intent = Intent(Intent.ACTION_VIEW, android.net.Uri.parse("https://barshon.me"))
                             context.startActivity(intent)
                         }
                     ) {
@@ -950,13 +950,13 @@ fun SettingsScreen(
                     )
                     HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f))
                     Text(
-                        text = "Website: https://mobiledoctor12.blogspot.com",
+                        text = "Website: https://barshon.me",
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Medium,
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier
                             .clickable {
-                                val intent = Intent(Intent.ACTION_VIEW, android.net.Uri.parse("https://mobiledoctor12.blogspot.com"))
+                                val intent = Intent(Intent.ACTION_VIEW, android.net.Uri.parse("https://barshon.me"))
                                 context.startActivity(intent)
                             }
                             .padding(vertical = 4.dp)
