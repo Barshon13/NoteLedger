@@ -1,0 +1,128 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Deep Midnight Luxury Royal Background Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B0F19" />
+      <stop offset="50%" stop-color="#171C2E" />
+      <stop offset="100%" stop-color="#090D16" />
+    </linearGradient>
+
+    <!-- Metallic Gold Outer Gradient -->
+    <linearGradient id="goldTrimGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDE68A" />
+      <stop offset="45%" stop-color="#F59E0B" />
+      <stop offset="70%" stop-color="#D97706" />
+      <stop offset="100%" stop-color="#B45309" />
+    </linearGradient>
+
+    <!-- Ledger Leather Body Gradient -->
+    <linearGradient id="leatherGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E293B" />
+      <stop offset="60%" stop-color="#0F172A" />
+      <stop offset="100%" stop-color="#020617" />
+    </linearGradient>
+
+    <!-- Spine Binding Gradient -->
+    <linearGradient id="spineGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F172A" />
+      <stop offset="100%" stop-color="#020617" />
+    </linearGradient>
+
+    <!-- Gold Bookmark Ribbon Gradient -->
+    <linearGradient id="ribbonGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDE68A" />
+      <stop offset="50%" stop-color="#F59E0B" />
+      <stop offset="100%" stop-color="#B45309" />
+    </linearGradient>
+
+    <!-- Golden Pen Body Gradient -->
+    <linearGradient id="penGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FEF08A" />
+      <stop offset="50%" stop-color="#F59E0B" />
+      <stop offset="100%" stop-color="#B45309" />
+    </linearGradient>
+
+    <!-- Radial Ambient Gold Glow -->
+    <radialGradient id="ambientGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.18" />
+      <stop offset="100%" stop-color="#F59E0B" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Drop Shadow Filter for Ledger Body -->
+    <filter id="ledgerShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="16" flood-color="#000000" flood-opacity="0.65" />
+    </filter>
+
+    <filter id="penShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="4" dy="8" stdDeviation="8" flood-color="#000000" flood-opacity="0.5" />
+    </filter>
+
+    <filter id="glowFilter" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="4" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Canvas Background -->
+  <rect width="512" height="512" fill="url(#bgGrad)" />
+
+  <!-- Ambient Radial Glow in center -->
+  <circle cx="256" cy="256" r="230" fill="url(#ambientGlow)" />
+
+  <!-- Subtle Geometric Luxury Hexagon Line Pattern -->
+  <polygon points="256,60 415,152 415,360 256,452 97,360 97,152" fill="none" stroke="#F59E0B" stroke-width="2" stroke-opacity="0.18" />
+  <polygon points="256,90 380,162 380,350 256,422 132,350 132,162" fill="none" stroke="#FCD34D" stroke-width="1.5" stroke-opacity="0.25" />
+
+  <!-- Main Luxury Leather Journal Shadow & Body -->
+  <g filter="url(#ledgerShadow)">
+    <!-- Outer Journal Body -->
+    <rect x="110" y="96" width="268" height="320" rx="34" fill="url(#leatherGrad)" stroke="url(#goldTrimGrad)" stroke-width="6" />
+
+    <!-- Left Leather Book Spine Binding -->
+    <path d="M 110,130 C 110,111 125,96 144,96 L 160,96 L 160,416 L 144,416 C 125,416 110,401 110,382 Z" fill="url(#spineGrad)" />
+
+    <!-- Spine Gold Stitching Accent Line -->
+    <line x1="160" y1="102" x2="160" y2="410" stroke="#D97706" stroke-width="3" stroke-dasharray="8,5" />
+
+    <!-- Golden Bookmark Ribbon -->
+    <path d="M 186,96 L 222,96 L 222,210 L 204,196 L 186,210 Z" fill="url(#ribbonGrad)" filter="url(#glowFilter)" />
+
+    <!-- Gold Foil Note Inlay Header Lines -->
+    <rect x="238" y="145" width="105" height="10" rx="5" fill="#FDE68A" opacity="0.9" />
+    <rect x="238" y="172" width="80" height="8" rx="4" fill="#FBBF24" opacity="0.8" />
+    <rect x="238" y="196" width="95" height="8" rx="4" fill="#F59E0B" opacity="0.75" />
+
+    <!-- Finance Metric Growth Bars Inside Ledger -->
+    <rect x="190" y="315" width="24" height="60" rx="6" fill="#34D399" />
+    <rect x="228" y="280" width="24" height="95" rx="6" fill="#38BDF8" />
+    <rect x="266" y="245" width="24" height="130" rx="6" fill="#F59E0B" />
+    <rect x="304" y="210" width="24" height="165" rx="6" fill="#10B981" />
+
+    <!-- Financial Growth Trend Sparkline Overlay -->
+    <polyline points="202,310 240,270 278,235 316,195" fill="none" stroke="#FEF08A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" filter="url(#glowFilter)" />
+    <!-- Sparkline Endpoint Glowing Dot -->
+    <circle cx="316" cy="195" r="7" fill="#FFFFFF" stroke="#F59E0B" stroke-width="3" />
+  </g>
+
+  <!-- Luxury Gold Fountain Pen / Stylus Overlay -->
+  <g transform="translate(370, 310) rotate(-35)" filter="url(#penShadow)">
+    <!-- Pen Barrel -->
+    <rect x="-18" y="-120" width="36" height="150" rx="6" fill="url(#penGrad)" stroke="#FDE68A" stroke-width="2" />
+    <!-- Pen Gold Clip -->
+    <rect x="-5" y="-105" width="10" height="70" rx="4" fill="#FFFFFF" opacity="0.9" />
+    <!-- Pen Nib Ring -->
+    <rect x="-18" y="30" width="36" height="8" fill="#F59E0B" />
+    <!-- Pen Nib Cone -->
+    <polygon points="-16,38 0,90 16,38" fill="#FDE68A" stroke="#D97706" stroke-width="1.5" />
+    <!-- Nib Ink Split Line -->
+    <line x1="0" y1="42" x2="0" y2="78" stroke="#0F172A" stroke-width="2.5" />
+    <circle cx="0" cy="58" r="3" fill="#0F172A" />
+  </g>
+
+  <!-- Top-Right Luxury Sparkle / Diamond Star -->
+  <path d="M 410,105 L 418,80 L 426,105 L 451,113 L 426,121 L 418,146 L 410,121 L 385,113 Z" fill="#FFFFFF" opacity="0.95" filter="url(#glowFilter)" />
+  <circle cx="418" cy="113" r="3" fill="#FEF08A" />
+
+  <!-- Bottom-Left Accent Sparkle -->
+  <path d="M 95,290 L 100,274 L 105,290 L 121,295 L 105,300 L 100,316 L 95,300 L 79,295 Z" fill="#FDE68A" opacity="0.8" filter="url(#glowFilter)" />
+</svg>

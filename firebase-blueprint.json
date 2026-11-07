@@ -1,0 +1,35 @@
+{
+  "collections": [
+    {
+      "path": "users",
+      "description": "Registered application members",
+      "fields": [
+        {
+          "name": "uid",
+          "type": "string",
+          "description": "Firebase Auth UID"
+        },
+        {
+          "name": "email",
+          "type": "string",
+          "description": "User email address"
+        },
+        {
+          "name": "displayName",
+          "type": "string",
+          "description": "User's full name"
+        },
+        {
+          "name": "photoUrl",
+          "type": "string",
+          "description": "User profile picture URL"
+        },
+        {
+          "name": "lastLogin",
+          "type": "timestamp",
+          "description": "Time of last sign-in"
+        }
+      ]
+    }
+  ]
+}

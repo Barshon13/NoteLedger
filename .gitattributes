@@ -1,0 +1,5 @@
+# Ensure binary files are not corrupted by line ending transformations
+*.jar binary
+*.keystore binary
+*.png binary
+*.webp binary
