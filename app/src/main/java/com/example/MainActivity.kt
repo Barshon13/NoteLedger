@@ -461,6 +461,28 @@ fun MainApp(
                                     fontWeight = FontWeight.Bold
                                 )
                             }
+                            val authUserState by com.example.auth.FirebaseAuthManager.getInstance(LocalContext.current).userState.collectAsStateWithLifecycle()
+                            IconButton(
+                                onClick = viewModel::openSettings,
+                                modifier = Modifier.testTag("account_top_button")
+                            ) {
+                                Box {
+                                    Icon(
+                                        imageVector = if (authUserState.user != null) Icons.Default.AccountCircle else Icons.Default.Person,
+                                        contentDescription = "Firebase Account & Settings",
+                                        tint = if (authUserState.user != null) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                    if (authUserState.user != null) {
+                                        Surface(
+                                            shape = androidx.compose.foundation.shape.CircleShape,
+                                            color = Color(0xFF4CAF50),
+                                            modifier = Modifier
+                                                .size(8.dp)
+                                                .align(Alignment.TopEnd)
+                                        ) {}
+                                    }
+                                }
+                            }
                             IconButton(
                                 onClick = viewModel::openThemeSelector,
                                 modifier = Modifier.testTag("theme_palette_top_button")
