@@ -18,8 +18,8 @@ android {
     applicationId = "com.barshon.noteledger"
     minSdk = 24
     targetSdk = 36
-    versionCode = 4
-    versionName = "2.02"
+    versionCode = 5
+    versionName = "2.1"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }

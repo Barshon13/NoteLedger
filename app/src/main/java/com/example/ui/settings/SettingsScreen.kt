@@ -526,7 +526,7 @@ fun SettingsScreen(
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "Version 2.02 • 100% Offline Architecture",
+                            text = "Version 2.1 • 100% Offline Architecture",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
