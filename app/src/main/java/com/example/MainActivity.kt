@@ -81,9 +81,17 @@ class MainActivity : ComponentActivity() {
                 themePalette = themePalette,
                 dynamicColor = dynamicColor
             ) {
-                androidx.compose.animation.Crossfade(
+                val emphasizedEasing = remember { CubicBezierEasing(0.05f, 0.7f, 0.1f, 1.0f) }
+                AnimatedContent(
                     targetState = showSplash,
-                    animationSpec = tween(800),
+                    transitionSpec = {
+                        (fadeIn(tween(520, easing = emphasizedEasing)) +
+                            scaleIn(initialScale = 0.96f, animationSpec = tween(560, easing = emphasizedEasing)))
+                            .togetherWith(
+                                fadeOut(tween(420, easing = FastOutSlowInEasing)) +
+                                    scaleOut(targetScale = 1.06f, animationSpec = tween(460, easing = FastOutSlowInEasing))
+                            )
+                    },
                     label = "splash_transition"
                 ) { isSplashing ->
                     if (isSplashing) {
@@ -174,41 +182,80 @@ fun MainApp(
         }
     }
 
-    if (editingNote != null) {
-        NoteEditorScreen(
-            note = editingNote!!,
-            title = noteEditorTitle,
-            content = noteEditorContent,
-            onTitleChange = viewModel::onNoteTitleChange,
-            onContentChange = viewModel::onNoteContentChange,
-            onSaveNote = viewModel::saveCurrentNote,
-            onBackClick = viewModel::closeNoteEditor,
-            onDeleteNote = viewModel::deleteNote,
-            modifier = modifier
-        )
-    } else if (showSettings) {
-        val themeMode by viewModel.themeMode.collectAsStateWithLifecycle()
-        val themePalette by viewModel.themePalette.collectAsStateWithLifecycle()
-        val dynamicColor by viewModel.dynamicColor.collectAsStateWithLifecycle()
+    val activeScreenKey = when {
+        editingNote != null -> "editor"
+        showSettings -> "settings"
+        else -> "home"
+    }
+    val screenEasing = remember { CubicBezierEasing(0.05f, 0.7f, 0.1f, 1.0f) }
 
-        SettingsScreen(
-            notesCount = notesCount,
-            expensesCount = expensesCount,
-            allTimeTotal = allTimeTotal,
-            onBackClick = viewModel::closeSettings,
-            onClearAllData = viewModel::clearAllData,
-            themeMode = themeMode,
-            themePalette = themePalette,
-            dynamicColor = dynamicColor,
-            onThemeModeChange = viewModel::setThemeMode,
-            onThemePaletteChange = viewModel::setThemePalette,
-            onDynamicColorChange = viewModel::setDynamicColor,
-            modifier = modifier
-        )
-    } else {
-        // Standard Phone / Tablet Interface
-        Scaffold(
-                modifier = modifier.fillMaxSize(),
+    AnimatedContent(
+        targetState = activeScreenKey,
+        transitionSpec = {
+            val isEnteringDetail = targetState != "home"
+            val slideSpec = tween<androidx.compose.ui.unit.IntOffset>(durationMillis = 360, easing = screenEasing)
+            val fadeInSpec = tween<Float>(durationMillis = 280, easing = screenEasing)
+            val fadeOutSpec = tween<Float>(durationMillis = 220, easing = FastOutSlowInEasing)
+
+            if (isEnteringDetail) {
+                (slideInHorizontally(animationSpec = slideSpec) { width -> (width * 0.14f).toInt() } +
+                    scaleIn(initialScale = 0.97f, animationSpec = tween(360, easing = screenEasing)) +
+                    fadeIn(fadeInSpec))
+                    .togetherWith(
+                        slideOutHorizontally(animationSpec = slideSpec) { width -> -(width * 0.06f).toInt() } +
+                            scaleOut(targetScale = 0.97f, animationSpec = tween(320, easing = screenEasing)) +
+                            fadeOut(fadeOutSpec)
+                    )
+            } else {
+                (slideInHorizontally(animationSpec = slideSpec) { width -> -(width * 0.08f).toInt() } +
+                    scaleIn(initialScale = 0.97f, animationSpec = tween(340, easing = screenEasing)) +
+                    fadeIn(fadeInSpec))
+                    .togetherWith(
+                        slideOutHorizontally(animationSpec = slideSpec) { width -> (width * 0.14f).toInt() } +
+                            scaleOut(targetScale = 0.96f, animationSpec = tween(280, easing = FastOutSlowInEasing)) +
+                            fadeOut(fadeOutSpec)
+                    )
+            }
+        },
+        modifier = modifier.fillMaxSize(),
+        label = "screen_transition"
+    ) { screenKey ->
+        when (screenKey) {
+            "editor" -> {
+                editingNote?.let { activeNote ->
+                    NoteEditorScreen(
+                        note = activeNote,
+                        title = noteEditorTitle,
+                        content = noteEditorContent,
+                        onTitleChange = viewModel::onNoteTitleChange,
+                        onContentChange = viewModel::onNoteContentChange,
+                        onSaveNote = viewModel::saveCurrentNote,
+                        onBackClick = viewModel::closeNoteEditor,
+                        onDeleteNote = viewModel::deleteNote,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+            }
+            "settings" -> {
+                SettingsScreen(
+                    notesCount = notesCount,
+                    expensesCount = expensesCount,
+                    allTimeTotal = allTimeTotal,
+                    onBackClick = viewModel::closeSettings,
+                    onClearAllData = viewModel::clearAllData,
+                    themeMode = themeMode,
+                    themePalette = themePalette,
+                    dynamicColor = dynamicColor,
+                    onThemeModeChange = viewModel::setThemeMode,
+                    onThemePaletteChange = viewModel::setThemePalette,
+                    onDynamicColorChange = viewModel::setDynamicColor,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+            else -> {
+                // Standard Phone / Tablet Interface
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
                 snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
                 topBar = {
                     TopAppBar(
@@ -311,15 +358,29 @@ fun MainApp(
                     targetState = currentTab,
                     transitionSpec = {
                         val isMovingRight = targetState.ordinal > initialState.ordinal
-                        val slideSpec = tween<androidx.compose.ui.unit.IntOffset>(durationMillis = 280, easing = FastOutSlowInEasing)
-                        val fadeSpec = tween<Float>(durationMillis = 220)
+                        val slideSpec = tween<androidx.compose.ui.unit.IntOffset>(durationMillis = 320, easing = screenEasing)
+                        val scaleSpec = tween<Float>(durationMillis = 320, easing = screenEasing)
+                        val fadeInSpec = tween<Float>(durationMillis = 260, easing = screenEasing)
+                        val fadeOutSpec = tween<Float>(durationMillis = 190, easing = FastOutSlowInEasing)
 
                         if (isMovingRight) {
-                            (slideInHorizontally(animationSpec = slideSpec) { width -> (width * 0.18f).toInt() } + fadeIn(fadeSpec))
-                                .togetherWith(slideOutHorizontally(animationSpec = slideSpec) { width -> -(width * 0.18f).toInt() } + fadeOut(fadeSpec))
+                            (slideInHorizontally(animationSpec = slideSpec) { width -> (width * 0.14f).toInt() } +
+                                scaleIn(initialScale = 0.98f, animationSpec = scaleSpec) +
+                                fadeIn(fadeInSpec))
+                                .togetherWith(
+                                    slideOutHorizontally(animationSpec = slideSpec) { width -> -(width * 0.10f).toInt() } +
+                                        scaleOut(targetScale = 0.98f, animationSpec = scaleSpec) +
+                                        fadeOut(fadeOutSpec)
+                                )
                         } else {
-                            (slideInHorizontally(animationSpec = slideSpec) { width -> -(width * 0.18f).toInt() } + fadeIn(fadeSpec))
-                                .togetherWith(slideOutHorizontally(animationSpec = slideSpec) { width -> (width * 0.18f).toInt() } + fadeOut(fadeSpec))
+                            (slideInHorizontally(animationSpec = slideSpec) { width -> -(width * 0.14f).toInt() } +
+                                scaleIn(initialScale = 0.98f, animationSpec = scaleSpec) +
+                                fadeIn(fadeInSpec))
+                                .togetherWith(
+                                    slideOutHorizontally(animationSpec = slideSpec) { width -> (width * 0.10f).toInt() } +
+                                        scaleOut(targetScale = 0.98f, animationSpec = scaleSpec) +
+                                        fadeOut(fadeOutSpec)
+                                )
                         }
                     },
                     modifier = Modifier
@@ -393,6 +454,8 @@ fun MainApp(
                 }
             }
         }
+    }
+    }
 
         // Add / Edit Daily Expense Dialog
         if (showExpenseDialog) {

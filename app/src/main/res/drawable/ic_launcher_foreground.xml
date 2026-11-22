@@ -3,9 +3,6 @@
     <item
         android:width="66dp"
         android:height="66dp"
-        android:gravity="center">
-        <bitmap
-            android:src="@drawable/noteledger_app_icon_1795335894210"
-            android:gravity="fill" />
-    </item>
+        android:drawable="@drawable/noteledger_premium_icon_1795336835657"
+        android:gravity="center" />
 </layer-list>
