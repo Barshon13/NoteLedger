@@ -42,8 +42,7 @@ import java.util.UUID
 
 enum class AppTab {
     NOTES,
-    EXPENSES,
-    COIN_STORE
+    EXPENSES
 }
 
 class MainViewModel(

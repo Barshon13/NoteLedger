@@ -110,31 +110,29 @@ dependencies {
   implementation(libs.androidx.room.runtime)
   // implementation(libs.coil.compose)
   implementation(libs.converter.moshi)
-  implementation(libs.firebase.ai)
+  // implementation(libs.firebase.ai)
   // Uncomment to use Firestore:
-  implementation(libs.firebase.firestore)
-  implementation(libs.firebase.auth)
-  implementation(libs.androidx.credentials)
-  implementation(libs.androidx.credentials.play.services)
-  implementation(libs.googleid)
+  // implementation(libs.firebase.firestore)
+  // implementation(libs.firebase.auth)
+  // implementation(libs.androidx.credentials)
+  // implementation(libs.androidx.credentials.play.services)
+  // implementation(libs.googleid)
 
-  // Uncomment ALL FOUR of the following dependencies together to use Firebase Auth and Google
-  // Sign-In via Credential Manager:
   implementation(libs.play.services.ads)
   implementation(libs.user.messaging.platform)
-  implementation(libs.billing.ktx)
-  implementation(libs.google.api.client.android) {
-    exclude(group = "org.apache.httpcomponents")
-  }
-  implementation(libs.google.api.client.gson) {
-    exclude(group = "org.apache.httpcomponents")
-  }
-  implementation(libs.google.http.client.android)
-  implementation(libs.google.api.services.drive) {
-    exclude(group = "org.apache.httpcomponents")
-  }
-  implementation(libs.google.http.client.gson)
-  implementation(libs.play.services.auth)
+  // implementation(libs.billing.ktx)
+  // implementation(libs.google.api.client.android) {
+  //   exclude(group = "org.apache.httpcomponents")
+  // }
+  // implementation(libs.google.api.client.gson) {
+  //   exclude(group = "org.apache.httpcomponents")
+  // }
+  // implementation(libs.google.http.client.android)
+  // implementation(libs.google.api.services.drive) {
+  //   exclude(group = "org.apache.httpcomponents")
+  // }
+  // implementation(libs.google.http.client.gson)
+  // implementation(libs.play.services.auth)
   implementation(libs.firebase.appcheck.recaptcha)
   implementation(libs.firebase.appcheck.playintegrity)
   implementation(libs.firebase.appcheck.debug)

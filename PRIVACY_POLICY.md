@@ -32,45 +32,31 @@ NoteLedger integrates the official **Google Mobile Ads SDK (AdMob)** to serve ad
 
 ---
 
-### 3. In-App Purchases (Google Play Billing)
+### 3. No Accounts & No In-App Purchases
 
-NoteLedger offers optional digital in-app products (such as Coin packs to unlock additional note creation quotas):
-- **Processed Exclusively by Google:** All financial transactions, card processing, billing authorization, and currency conversions are handled securely and directly by the **Google Play Billing Library**.
-- **No Financial Data Access:** NoteLedger and its developer **never** see, receive, or store your credit card numbers, debit card details, bank account credentials, or billing addresses.
-- **Order Verification:** We only receive an anonymous purchase token and order identifier from Google Play to confirm successful payment and credit the appropriate coin balance to your on-device ledger.
+NoteLedger does not require user accounts, login, or sign-in, and does not offer in-app purchases or subscriptions. All note-taking and expense-tracking features work directly on your device without account registration or payment credentials.
 
 ---
 
-### 4. Optional Cloud Backup (Google Drive AppData)
-
-NoteLedger provides an optional **Cloud Backup & Restore** feature to safeguard your records:
-- **Private User Storage:** If you choose to connect your Google Account for cloud backups, an encrypted snapshot of your local database is uploaded strictly to your **own private Google Drive AppData folder** (`drive.appdata` scope).
-- **Zero Developer Access:** This backup is stored exclusively in your private cloud account. The developer has zero access to your Google Drive files, cannot read your backups, and cannot alter your cloud data.
-- **User Control:** Cloud sync only initiates when you explicitly tap "Backup to Google Drive" or "Restore from Google Drive" in the application settings.
-
----
-
-### 5. Data Retention & User Data Deletion
+### 4. Data Retention & User Data Deletion
 
 Because NoteLedger stores your information locally on your device, you have complete and total ownership over your data at all times:
-- **In-App Data Erasure:** You can permanently wipe all local notes, expenses, budgets, and balance records at any time by going to **Settings > Clear All Data** within the application.
+- **In-App Data Erasure:** You can permanently wipe all local notes, expenses, budgets, and debt records at any time by going to **Settings > Clear All Data** within the application.
 - **Device-Level Deletion:** You can permanently delete all locally stored records by clearing the app's storage via **Android Settings > Apps > NoteLedger > Storage & cache > Clear storage**, or by simply uninstalling the application from your device.
-- **Deleting Cloud Backups:** If you utilized Google Drive backup, you can delete your AppData files anytime by visiting [Google Drive on the web](https://drive.google.com), navigating to **Settings (gear icon) > Manage Apps > NoteLedger > Options > Delete hidden app data**.
 
 ---
 
-### 6. Children's Privacy
+### 5. Children's Privacy
 
 NoteLedger is not directed toward children under the age of 13 (or under 16 in the European Economic Area). We do not knowingly solicit, collect, or process personal data from children. If you believe that a child has provided us with personal information, please contact us immediately so we can assist in removing it.
 
 ---
 
-### 7. Android Device Permissions
+### 6. Android Device Permissions
 
 NoteLedger requests only the minimal system permissions required to deliver core functionality:
-- **`android.permission.INTERNET`:** Required to load AdMob advertisements, verify in-app purchases with Google Play, and execute user-requested Google Drive backups.
-- **`android.permission.ACCESS_NETWORK_STATE`:** Used to check whether your device has an active internet connection before initiating ads or cloud sync requests.
-- **`com.android.vending.BILLING`:** Required to facilitate in-app purchases securely through Google Play.
+- **`android.permission.INTERNET`:** Required to load AdMob advertisements.
+- **`android.permission.ACCESS_NETWORK_STATE`:** Used to check whether your device has an active internet connection before requesting ads.
 - **Zero Dangerous Permissions:** The app **does not** request intrusive permissions such as Location, Camera, Microphone, Contacts, Phone State, SMS, or broad storage access (`READ_EXTERNAL_STORAGE` / `MANAGE_EXTERNAL_STORAGE`).
 
 ---

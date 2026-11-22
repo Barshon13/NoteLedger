@@ -1,20 +1,14 @@
 package com.example.ui.settings
 
-import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.widget.Toast
-import kotlinx.coroutines.launch
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -32,36 +26,21 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.BrightnessAuto
-import androidx.compose.material.icons.filled.BugReport
-import androidx.compose.material.icons.filled.CleaningServices
 import androidx.compose.material.icons.filled.CloudOff
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.DeleteForever
-import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Policy
-import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material.icons.filled.ReceiptLong
 import androidx.compose.material.icons.filled.Security
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Storage
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Language
-import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material.icons.filled.VerifiedUser
 import android.os.Build
-import androidx.compose.material.icons.filled.BrightnessAuto
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Palette
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Logout
-import androidx.compose.material.icons.filled.CloudDone
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.CircularProgressIndicator
-import com.example.auth.FirebaseAuthManager
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import com.example.ui.theme.ThemeMode
@@ -116,8 +95,6 @@ fun SettingsScreen(
     allTimeTotal: Double,
     onBackClick: () -> Unit,
     onClearAllData: () -> Unit,
-    onBackupClick: () -> Unit = {},
-    onRestoreClick: () -> Unit = {},
     themeMode: ThemeMode = ThemeMode.SYSTEM,
     themePalette: ThemePalette = ThemePalette.SAGE_FOREST,
     dynamicColor: Boolean = false,
@@ -127,7 +104,6 @@ fun SettingsScreen(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val scope = rememberCoroutineScope()
 
     var showFirstClearDialog by remember { mutableStateOf(false) }
     var showSecondClearDialog by remember { mutableStateOf(false) }
@@ -137,10 +113,6 @@ fun SettingsScreen(
     var showCopyrightDialog by remember { mutableStateOf(false) }
     var inputLicenseKey by remember { mutableStateOf("") }
     var statusMessage by remember { mutableStateOf<String?>(null) }
-    var showSignOutConfirmDialog by remember { mutableStateOf(false) }
-
-    val authManager = remember { FirebaseAuthManager.getInstance(context) }
-    val authUserState by authManager.userState.collectAsStateWithLifecycle()
 
     val drmLicense by com.example.drm.DrmLicenseManager.licenseState.collectAsStateWithLifecycle()
 
@@ -222,7 +194,7 @@ fun SettingsScreen(
                         )
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(
-                            text = "All notes and expenses are stored strictly on your device. Use Cloud Sync to securely backup your data to your private Google Drive.",
+                            text = "All notes and expenses are stored strictly on your device. No account, sign-in, or cloud upload required.",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -266,268 +238,6 @@ fun SettingsScreen(
                             icon = Icons.Default.VerifiedUser
                         )
                     }
-                }
-            }
-
-            // Firebase Authentication & Account Section
-            Text(
-                text = "FIREBASE ACCOUNT & GOOGLE SIGN-IN",
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
-            )
-
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .testTag("firebase_auth_card"),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    val user = authUserState.user
-                    if (user != null) {
-                        // Signed-in State
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Surface(
-                                shape = CircleShape,
-                                color = MaterialTheme.colorScheme.primaryContainer,
-                                modifier = Modifier.size(52.dp)
-                            ) {
-                                Box(contentAlignment = Alignment.Center) {
-                                    val initials = user.displayName?.takeIf { it.isNotBlank() }
-                                        ?.split(" ")
-                                        ?.mapNotNull { it.firstOrNull()?.toString() }
-                                        ?.take(2)
-                                        ?.joinToString("")
-                                        ?: "NL"
-                                    Text(
-                                        text = initials.uppercase(),
-                                        style = MaterialTheme.typography.titleMedium,
-                                        fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                                    )
-                                }
-                            }
-                            Spacer(modifier = Modifier.width(16.dp))
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    text = user.displayName?.takeIf { it.isNotBlank() } ?: "Google User",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
-                                Text(
-                                    text = user.email ?: "Signed in via Firebase",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                                Spacer(modifier = Modifier.height(4.dp))
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        imageVector = Icons.Default.CloudDone,
-                                        contentDescription = null,
-                                        tint = androidx.compose.ui.graphics.Color(0xFF4CAF50),
-                                        modifier = Modifier.size(14.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    Text(
-                                        text = "Firebase Synced",
-                                        style = MaterialTheme.typography.labelSmall,
-                                        color = androidx.compose.ui.graphics.Color(0xFF4CAF50),
-                                        fontWeight = FontWeight.SemiBold
-                                    )
-                                }
-                            }
-                        }
-
-                        HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column {
-                                Text(
-                                    text = "Firebase UID",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                                Text(
-                                    text = user.uid.take(16) + "...",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
-                            }
-                            OutlinedButton(
-                                onClick = { showSignOutConfirmDialog = true },
-                                modifier = Modifier.testTag("firebase_signout_button"),
-                                shape = RoundedCornerShape(12.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Logout,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text("Sign Out")
-                            }
-                        }
-                    } else {
-                        // Not Signed-In State
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Surface(
-                                shape = CircleShape,
-                                color = MaterialTheme.colorScheme.secondaryContainer,
-                                modifier = Modifier.size(46.dp)
-                            ) {
-                                Box(contentAlignment = Alignment.Center) {
-                                    Icon(
-                                        imageVector = Icons.Default.AccountCircle,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                                        modifier = Modifier.size(28.dp)
-                                    )
-                                }
-                            }
-                            Spacer(modifier = Modifier.width(14.dp))
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    text = "Firebase Cloud Account",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
-                                Text(
-                                    text = "Sign in with Google to synchronize your user profile and protect cloud preferences.",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        }
-
-                        if (authUserState.errorMessage != null) {
-                            Text(
-                                text = authUserState.errorMessage ?: "",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.error
-                            )
-                        }
-
-                        Button(
-                            onClick = {
-                                scope.launch {
-                                    val result = authManager.signInWithGoogle(context as Activity)
-                                    if (result.isSuccess) {
-                                        Toast.makeText(context, "Welcome ${result.getOrNull()?.displayName ?: ""}!", Toast.LENGTH_SHORT).show()
-                                    }
-                                }
-                            },
-                            enabled = !authUserState.isLoading,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .testTag("firebase_google_signin_button"),
-                            shape = RoundedCornerShape(12.dp)
-                        ) {
-                            if (authUserState.isLoading) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(20.dp),
-                                    color = MaterialTheme.colorScheme.onPrimary,
-                                    strokeWidth = 2.dp
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text("Signing in...")
-                            } else {
-                                Icon(
-                                    imageVector = Icons.Default.Person,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(18.dp)
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(
-                                    text = "Sign in with Google",
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (showSignOutConfirmDialog) {
-                AlertDialog(
-                    onDismissRequest = { showSignOutConfirmDialog = false },
-                    title = { Text("Sign Out of Firebase?") },
-                    text = { Text("Your local notes and expenses will remain completely intact on your device. You can sign back in at any time.") },
-                    confirmButton = {
-                        TextButton(
-                            onClick = {
-                                showSignOutConfirmDialog = false
-                                scope.launch {
-                                    authManager.signOut()
-                                    Toast.makeText(context, "Signed out successfully", Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                        ) {
-                            Text("Sign Out", color = MaterialTheme.colorScheme.error)
-                        }
-                    },
-                    dismissButton = {
-                        TextButton(onClick = { showSignOutConfirmDialog = false }) {
-                            Text("Cancel")
-                        }
-                    }
-                )
-            }
-
-            // Cloud Backup Section
-            Text(
-                text = "CLOUD BACKUP & SYNC",
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
-            )
-
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-            ) {
-                Column {
-                    SettingsActionItem(
-                        icon = Icons.Default.Refresh,
-                        title = "Backup to Google Drive",
-                        subtitle = "Upload an encrypted snapshot to your private AppData folder",
-                        onClick = onBackupClick,
-                        tag = "backup_button"
-                    )
-
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
-
-                    SettingsActionItem(
-                        icon = Icons.Default.Refresh,
-                        title = "Restore from Google Drive",
-                        subtitle = "Fetch and populate your local database from the latest backup",
-                        onClick = onRestoreClick,
-                        tag = "restore_button"
-                    )
                 }
             }
 
@@ -816,13 +526,13 @@ fun SettingsScreen(
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "Version 2.02 • Hybrid Cloud Architecture",
+                            text = "Version 2.02 • 100% Offline Architecture",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "Designed for high privacy. Notes are stored locally by default, with optional Google Drive cloud sync.",
+                            text = "Designed for maximum privacy. All notes and expenses are stored locally on your device with no sign-in required.",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
                         )
@@ -1063,15 +773,12 @@ fun SettingsScreen(
             We do not collect, harvest, transmit, share, or monetize any Personally Identifiable Information (PII), such as your name, email, phone number, contacts, photos, or GPS location.
 
             3. Advertisements (Google AdMob)
-            NoteLedger uses Google AdMob to display banner, interstitial, and rewarded video ads. Third-party ad networks may process pseudonymous device telemetry (such as your Android Advertising ID) to serve ads in compliance with Google Play Developer Policies.
+            NoteLedger uses Google AdMob to display advertisements. Third-party ad networks may process pseudonymous device telemetry (such as your Android Advertising ID) to serve ads in compliance with Google Play Developer Policies.
 
-            4. In-App Purchases (Google Play Billing)
-            Coin packs and quota top-ups are processed directly and securely through Google Play Billing. NoteLedger never accesses or stores your credit card or billing credentials.
+            4. No Accounts & No In-App Purchases
+            NoteLedger does not require user sign-in or account creation and does not include in-app purchases. All core features are available free of charge directly on your device.
 
-            5. Optional Cloud Backup (Google Drive AppData)
-            If you choose to use Cloud Backup, an encrypted copy of your data is uploaded directly to your private Google Drive AppData folder. The developer has zero access to this data.
-
-            6. Developer & Contact Information
+            5. Developer & Contact Information
             Developer: Barshon Hossain
             Website: https://barshon.me
             Email: mohammadborshonhossain6@gmail.com
