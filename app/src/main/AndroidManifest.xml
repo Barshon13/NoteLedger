@@ -5,10 +5,10 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    <!-- Mobile Hardware Baseline (Touchscreen explicitly required for Notes & Ledger gestures) -->
+    <!-- Mark touchscreen optional so Desktop, ChromeOS, and XR devices are not restricted -->
     <uses-feature
         android:name="android.hardware.touchscreen"
-        android:required="true" />
+        android:required="false" />
 
     <application
         android:allowBackup="true"

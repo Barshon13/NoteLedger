@@ -36,6 +36,9 @@ import com.example.ui.theme.NoteLedgerTheme
 import com.example.ui.theme.ThemePreferences
 import com.example.ui.SplashScreen
 
+import android.graphics.Color as AndroidColor
+import androidx.activity.SystemBarStyle
+
 class MainActivity : ComponentActivity() {
 
     private val viewModel: MainViewModel by viewModels {
@@ -52,8 +55,8 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        super.onCreate(savedInstanceState)
 
         // Initialize Firebase App Check first (Play Integrity / reCAPTCHA) to protect backend and AdMob
         com.example.security.AppCheckManager.initialize(this)
@@ -67,14 +70,35 @@ class MainActivity : ComponentActivity() {
         // Initialize AdMob
         com.example.ads.AdManager.initialize(this)
 
-
-
         setContent {
             val themeMode by viewModel.themeMode.collectAsStateWithLifecycle()
             val themePalette by viewModel.themePalette.collectAsStateWithLifecycle()
             val dynamicColor by viewModel.dynamicColor.collectAsStateWithLifecycle()
-            
+            val isSystemDark = isSystemInDarkTheme()
+            val useDarkTheme = when (themeMode) {
+                com.example.ui.theme.ThemeMode.SYSTEM -> isSystemDark
+                com.example.ui.theme.ThemeMode.LIGHT -> false
+                com.example.ui.theme.ThemeMode.DARK -> true
+            }
+
             var showSplash by remember { mutableStateOf(true) }
+            val effectiveDarkBars = showSplash || useDarkTheme
+
+            DisposableEffect(effectiveDarkBars) {
+                enableEdgeToEdge(
+                    statusBarStyle = if (effectiveDarkBars) {
+                        SystemBarStyle.dark(AndroidColor.TRANSPARENT)
+                    } else {
+                        SystemBarStyle.light(AndroidColor.TRANSPARENT, AndroidColor.TRANSPARENT)
+                    },
+                    navigationBarStyle = if (effectiveDarkBars) {
+                        SystemBarStyle.dark(AndroidColor.TRANSPARENT)
+                    } else {
+                        SystemBarStyle.light(AndroidColor.TRANSPARENT, AndroidColor.TRANSPARENT)
+                    }
+                )
+                onDispose {}
+            }
 
             NoteLedgerTheme(
                 themeMode = themeMode,

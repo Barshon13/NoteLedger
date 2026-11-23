@@ -18,8 +18,8 @@ android {
     applicationId = "com.barshon.noteledger"
     minSdk = 24
     targetSdk = 36
-    versionCode = 6
-    versionName = "2.2"
+    versionCode = 7
+    versionName = "2.3"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
@@ -90,6 +90,7 @@ dependencies {
   implementation(libs.firebase.crashlytics)
   // implementation(libs.accompanist.permissions)
   implementation(libs.androidx.activity.compose)
+  implementation(libs.androidx.fragment.ktx)
   // implementation(libs.androidx.camera.camera2)
   // implementation(libs.androidx.camera.core)
   // implementation(libs.androidx.camera.lifecycle)
